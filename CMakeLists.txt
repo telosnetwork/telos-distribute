@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(eosio_contracts)
+project(telos_dist)
 
 set(VERSION_MAJOR 1)
 set(VERSION_MINOR 7)
@@ -47,8 +47,8 @@ endif()
 
 ExternalProject_Add(
    contracts_project
-   SOURCE_DIR ${CMAKE_SOURCE_DIR}/contracts
-   BINARY_DIR ${CMAKE_BINARY_DIR}/contracts
+   SOURCE_DIR ${CMAKE_SOURCE_DIR}/libs
+   BINARY_DIR ${CMAKE_BINARY_DIR}/libs
    CMAKE_ARGS -DCMAKE_TOOLCHAIN_FILE=${EOSIO_CDT_ROOT}/lib/cmake/eosio.cdt/EosioWasmToolchain.cmake
    UPDATE_COMMAND ""
    PATCH_COMMAND ""
@@ -56,6 +56,18 @@ ExternalProject_Add(
    INSTALL_COMMAND ""
    BUILD_ALWAYS 1
 )
+
+add_contract(eosio.tedp eosio.tedp ${CMAKE_CURRENT_SOURCE_DIR}/src/eosio.tedp.cpp)
+
+target_compile_options(eosio.tedp.wasm PUBLIC -R${CMAKE_CURRENT_SOURCE_DIR}/resources)
+target_compile_options(eosio.tedp.wasm PUBLIC -Wunknown-pragmas)
+target_include_directories(eosio.tedp.wasm
+   PUBLIC
+   ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+set_target_properties(eosio.tedp.wasm
+   PROPERTIES
+   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
 
 if (APPLE)
    set(OPENSSL_ROOT "/usr/local/opt/openssl")
