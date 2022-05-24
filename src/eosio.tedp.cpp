@@ -1,5 +1,4 @@
 #include <eosio.tedp/eosio.tedp.hpp>
-
 // tf 1mil
 // econdevfunds 500k
 // rex 1mil
@@ -27,27 +26,38 @@ const uint64_t max_coredev_amount = 9863;
 // 1.7mil * 12 months / 365 days / 24hrs / 2 (every half hour) = 1164.3835
 const uint64_t max_rex_amount = 1165;
 
-ACTION tedp::settf(uint64_t amount)
+// Storage key in eosio.evm AccountStates table
+const std::string sTLOS_WTLOS_balance_storage_key = "c526daaebcecaca2768e23b00b7f63b8c7fbc592f8bffd713e945c96cc6a6686";
+
+// sTLOS address on Telos EVM
+const std::string sTLOS = "0x222222222222222222222222222";
+
+void tedp::settf(uint64_t amount)
 {
     check(amount <= max_tf_amount, "Max amount for tf account is 32876 per day");
     setpayout(name("tf"), amount, daily_interval);
 }
 
-ACTION tedp::setecondev(uint64_t amount)
+void tedp::setecondev(uint64_t amount)
 {
     check(amount <= max_econdev_amount, "Max amount for econdevfunds account is 16438 per day");
     setpayout(name("econdevfunds"), amount, daily_interval);
 }
 
-ACTION tedp::setcoredev(uint64_t amount)
+void tedp::setcoredev(uint64_t amount)
 {
     check(amount <= max_coredev_amount, "Max amount for econdevfunds account is 9863 per day");
     setpayout(name("treasury.tcd"), amount, daily_interval);
 }
 
-ACTION tedp::setrex(uint64_t amount) {
-    check(amount <= max_rex_amount, "Max amount for eosio.rex account is 1165 per 30min");
-    setpayout(name("eosio.rex"), amount, rex_interval);
+void tedp::setrex(uint64_t amount) {
+    check(amount <= max_rex_amount, "Max amount for eosio.rex account is 1165 * 0.4 per 30min");
+    setpayout(REX_CONTRACT, amount, rex_interval);
+}
+
+void tedp::setevmstake(uint64_t amount) {
+    check(amount <= max_rex_amount, "Max amount for eosio.evm stlos contract is 1165 * 0.6 per 30min");
+    setpayout(EVM_CONTRACT, amount, rex_interval);
 }
 
 void tedp::setpayout(name to, uint64_t amount, uint64_t interval)
@@ -86,6 +96,10 @@ ACTION tedp::pay()
     //uint64_t now_ms = eosio::current_time_point().sec_since_epoch();
     uint64_t now_ms = current_time_point().sec_since_epoch();
     bool payouts_made = false;
+    double rex_balance_ratio = getbalanceratio();
+    auto config = configuration.get();
+    double rex_fixed_ratio = config.ratio;
+
     for (auto itr = payouts.begin(); itr != payouts.end(); itr++)
     {
         auto p = *itr;
@@ -104,21 +118,47 @@ ACTION tedp::pay()
         });
         uint64_t total_due = payouts_due * p.amount;
         eosio::print("payout ", payouts_due, " payouts of ", p.amount, " TLOS to: ", p.to, " ", p.amount, " TLOS with time: ", now_ms, "\n");
-        asset total_payout = asset(total_due * 10000, symbol("TLOS", 4));
 
-        if (p.to == name("eosio.rex"))
+        if (p.to == REX_CONTRACT)
         {
             // channel_to_rex
             eosio::print("Channeling to rex\n");
-            action(permission_level{_self, name("active")}, name("eosio"), name("distviarex"), make_tuple(get_self(), total_payout)).send();
+            total_due = round(total_due * (1 - rex_balance_ratio));
+            // TODO: APPLY FIXED RATIO
+            asset rex_payout = asset(total_due, CORE_SYM);
+            action(permission_level{_self, name("active")}, name("eosio"), name("distviarex"), make_tuple(get_self(), rex_payout)).send();
         }
         else
         {
-            // transfer
-            eosio::print("Transferring\n");
-            action(permission_level{_self, name("active")}, name("eosio.token"), name("transfer"), make_tuple(get_self(), p.to, total_payout, std::string("TEDP Funding"))).send();
+            if(p.to == EVM_CONTRACT){
+                eosio::print("Bridging to EVM sTLOS contract \n");
+                total_due = round(total_due * rex_balance_ratio);
+                // TODO: APPLY FIXED RATIO
+                asset stlos_payout = asset(total_due, CORE_SYM);
+                action(permission_level{get_self(), name("active")}, CORE_SYM_ACCOUNT, name("transfer"), make_tuple(get_self(), EVM_CONTRACT, stlos_payout, sTLOS )).send();
+            } else {
+                // transfer
+                eosio::print("Transferring\n");
+                asset total_payout = asset(total_due * 10000, CORE_SYM);
+                action(permission_level{_self, name("active")}, CORE_SYM_ACCOUNT, name("transfer"), make_tuple(get_self(), p.to, total_payout, std::string("TEDP Funding"))).send();
+            }
         }
     }
 
     check(payouts_made, "No payouts are due");
 }
+
+double tedp::getbalanceratio()
+{
+    eosio_evm::account_state_table account_states(EVM_CONTRACT, 24);
+    auto account_states_by_key = account_states.get_index<"bykey"_n>();
+    auto account_state  = account_states_by_key.require_find(eosio_evm::toChecksum256(intx::from_string<uint256_t>(sTLOS_WTLOS_balance_storage_key)));
+    check(account_state != account_states_by_key.end(), "storage key does not exist");
+    const bigint::checksum256 stlos_wtlos_balance = account_state->value;
+
+    const auto rex_tlos_balance = eosio::token::get_balance(CORE_SYM_ACCOUNT, "eosio.rex"_n, symbol_code("TLOS") );
+
+    double ratio = ((int)stlos_wtlos_balance / (int)rex_tlos_balance.amount);
+    return ratio;
+}
+
