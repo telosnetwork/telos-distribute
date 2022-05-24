@@ -70,7 +70,7 @@ BOOST_FIXTURE_TEST_CASE( set_payouts, eosio_tedp_tester ) try {
 BOOST_FIXTURE_TEST_CASE( pay_flow, eosio_tedp_tester ) try {
     transfer( config::system_account_name, test_account, core_sym::from_string("139873804.3119"), config::system_account_name );
     const asset init_balance = core_sym::from_string("30000.0000");
-    const std::vector<account_name> accounts = { N(aliceaccount), N(bobbyaccount), N(carolaccount), N(emilyaccount) };
+    const std::vector<account_name> accounts = { "aliceaccount"_n, "bobbyaccount"_n, "carolaccount"_n, "emilyaccount"_n };
     account_name alice = accounts[0], bob = accounts[1], carol = accounts[2], emily = accounts[3];
     setup_rex_accounts( accounts, init_balance );
 
@@ -115,10 +115,10 @@ BOOST_FIXTURE_TEST_CASE( pay_flow, eosio_tedp_tester ) try {
     fc::variant initial_rex_pool = get_rex_pool();
     asset initial_total_unlent = initial_rex_pool["total_unlent"].as<asset>();
     asset initial_total_lendable = initial_rex_pool["total_lendable"].as<asset>();
-    uint64_t last_payout      = get_payout(N(tf))["last_payout"].as<uint64_t>();
+    uint64_t last_payout      = get_payout("tf"_n)["last_payout"].as<uint64_t>();
 
-    asset initial_tf_balance = get_balance(N(tf));
-    asset initial_econ_balance = get_balance(N(econdevfunds));
+    asset initial_tf_balance = get_balance("tf"_n);
+    asset initial_econ_balance = get_balance("econdevfunds"_n);
 
     auto trace = dump_trace(payout());
     BOOST_REQUIRE_EQUAL(transaction_receipt::executed, trace->receipt->status);
@@ -133,12 +133,12 @@ BOOST_FIXTURE_TEST_CASE( pay_flow, eosio_tedp_tester ) try {
         uint64_t total_due = payouts_due * payout_info["amount"].as<uint64_t>();
         asset total_payout = asset(total_due * 10000, symbol(4, "TLOS"));
 
-        if (payout_info["to"].as<name>() == N(eosio.rex)) {
+        if (payout_info["to"].as<name>() == "eosio.rex"_n) {
             fc::variant rex_pool = get_rex_pool();
             BOOST_REQUIRE_EQUAL(rex_pool["total_unlent"].as<asset>(), initial_total_unlent + total_payout);
             BOOST_REQUIRE_EQUAL(rex_pool["total_lendable"].as<asset>(), initial_total_lendable + total_payout);
         } else {
-            auto initial_balance = (payout == N(econdevfunds) ? initial_econ_balance : initial_tf_balance);
+            auto initial_balance = (payout == "econdevfunds"_n ? initial_econ_balance : initial_tf_balance);
             cout << "initial_balance: " << initial_balance << endl;
             BOOST_REQUIRE_EQUAL(get_balance(payout), initial_balance + total_payout);
         }
@@ -151,10 +151,10 @@ BOOST_FIXTURE_TEST_CASE( pay_flow, eosio_tedp_tester ) try {
     initial_rex_pool = get_rex_pool();
     initial_total_unlent = initial_rex_pool["total_unlent"].as<asset>();
     initial_total_lendable = initial_rex_pool["total_lendable"].as<asset>();
-    last_payout      = get_payout(N(tf))["last_payout"].as<uint64_t>();
+    last_payout      = get_payout("tf"_n)["last_payout"].as<uint64_t>();
 
-    initial_tf_balance = get_balance(N(tf));
-    initial_econ_balance = get_balance(N(econdevfunds));
+    initial_tf_balance = get_balance("tf"_n);
+    initial_econ_balance = get_balance("econdevfunds"_n);
 
     trace = dump_trace(payout());
     BOOST_REQUIRE_EQUAL(transaction_receipt::executed, trace->receipt->status);
@@ -167,12 +167,12 @@ BOOST_FIXTURE_TEST_CASE( pay_flow, eosio_tedp_tester ) try {
         uint64_t total_due = payouts_due * payout_info["amount"].as<uint64_t>();
         asset total_payout = asset(total_due * 10000, symbol(4, "TLOS"));
 
-        if (payout_info["to"].as<name>() == N(eosio.rex)) {
+        if (payout_info["to"].as<name>() == "eosio.rex"_n) {
             fc::variant rex_pool = get_rex_pool();
             BOOST_REQUIRE_EQUAL(rex_pool["total_unlent"].as<asset>(), initial_total_unlent + total_payout);
             BOOST_REQUIRE_EQUAL(rex_pool["total_lendable"].as<asset>(), initial_total_lendable + total_payout);
         } else {
-            auto initial_balance = (payout == N(econdevfunds) ? initial_econ_balance : initial_tf_balance);
+            auto initial_balance = (payout == "econdevfunds"_n ? initial_econ_balance : initial_tf_balance);
             BOOST_REQUIRE_EQUAL(get_balance(payout), initial_balance + total_payout);
         }
     }
