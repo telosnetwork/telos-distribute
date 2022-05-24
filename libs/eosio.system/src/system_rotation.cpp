@@ -1,13 +1,14 @@
 #include <eosio.system/eosio.system.hpp>
 
+#include <tuple>
+
+#include "telos.hpp"
+
 #define TWELVE_HOURS_US 43200000000
 #define SIX_HOURS_US 21600000000
 #define ONE_HOUR_US 900000000       // debug version
 #define SIX_MINUTES_US 360000000    // debug version
 #define TWELVE_MINUTES_US 720000000 // debug version
-#define MAX_PRODUCERS 42     // revised for TEDP 2 Phase 2, also set in producer_pay.cpp, change in both places
-#define TOP_PRODUCERS 21
-#define MAX_VOTE_PRODUCERS 30
 
 namespace eosiosystem {
 using namespace eosio;
@@ -29,7 +30,11 @@ void system_contract::update_missed_blocks_per_rotation() {
                     _gschedule_metrics.producers_metric.end());
   uint16_t max_kick_bps = uint16_t(active_schedule_size / 7);
 
-  std::vector<producer_info> prods;
+  // tuple contents:
+  // 0: producer name
+  // 1: total votes
+  // 3: missed blocks per rotation
+  std::vector<std::tuple<name, double, uint32_t>> prods;
 
   for (auto &pm : _gschedule_metrics.producers_metric) {
     auto pitr = _producers.find(pm.bp_name.value);
@@ -44,20 +49,30 @@ void system_contract::update_missed_blocks_per_rotation() {
       }
 
       if (pitr->missed_blocks_per_rotation > 0)
-        prods.emplace_back(*pitr);
+        prods.emplace_back(
+            std::make_tuple(
+                pitr->owner,
+                pitr->total_votes,
+                pitr->missed_blocks_per_rotation));
     }
   }
 
-  std::sort(prods.begin(), prods.end(), [](const producer_info &p1,
-                                           const producer_info &p2) {
-    if (p1.missed_blocks_per_rotation != p2.missed_blocks_per_rotation)
-      return p1.missed_blocks_per_rotation > p2.missed_blocks_per_rotation;
+  std::sort(prods.begin(), prods.end(), [](const auto& p1,
+                                           const auto& p2) {
+    name prod_name1; double total_votes1; uint32_t missed_blocks1;
+    std::tie(prod_name1, total_votes1, missed_blocks1) = p1;
+
+    name prod_name2; double total_votes2; uint32_t missed_blocks2;
+    std::tie(prod_name2, total_votes2, missed_blocks2) = p2;
+
+    if (missed_blocks1 != missed_blocks2)
+      return missed_blocks1 > missed_blocks2;
     else
-      return p1.total_votes < p2.total_votes;
+      return total_votes1 < total_votes2;
   });
 
   for (auto &prod : prods) {
-    auto pitr = _producers.find(prod.owner.value);
+    auto pitr = _producers.find(((name)std::get<0>(prod)).value);
 
     if (crossed_missed_blocks_threshold(pitr->missed_blocks_per_rotation,
                                         uint32_t(active_schedule_size)) &&
