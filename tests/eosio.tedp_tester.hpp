@@ -33,7 +33,7 @@ public:
 
     eosio_tedp_tester() {
         produce_blocks( 2 );
-        create_accounts_with_resources({ "tf"_n, "econdevfunds"_n });
+        create_accounts_with_resources({ "tf"_n, "econdevfunds"_n, "eosio.evm"_n });
         set_code( test_account, contracts::eosio_tedp_wasm() );
         set_abi( test_account, contracts::eosio_tecp_abi().data() );
         {
@@ -54,6 +54,13 @@ public:
             ("maximum_supply", maxsupply );
 
         base_tester::push_action(contract, "create"_n, contract, act );
+    }
+
+    void configure(double value) {
+        action act = get_action(test_account, "setconfig"_n, vector<permission_level>{{"eosio"_n, config::active_name}},
+			mvo()
+        ("user", "eosio"_n)
+        ("ratio", value));
     }
 
     void create_core_token( symbol core_symbol = symbol{CORE_SYM} ) {
@@ -84,6 +91,17 @@ public:
     transaction_trace_ptr setecondev(const uint64_t amount) {
         signed_transaction trx;
         action act = get_action(test_account, "setecondev"_n, vector<permission_level>{{"eosio"_n, config::active_name}},
+			mvo()
+			    ("amount", amount));
+        trx.actions.emplace_back(act);
+        set_transaction_headers(trx);
+        trx.sign( get_private_key("eosio"_n, "active"), control->get_chain_id());
+        return push_transaction(trx);
+    }
+
+    transaction_trace_ptr setevmstake(const uint64_t amount) {
+        signed_transaction trx;
+        action act = get_action(test_account, "setevmstake"_n, vector<permission_level>{{"eosio"_n, config::active_name}},
 			mvo()
 			    ("amount", amount));
         trx.actions.emplace_back(act);

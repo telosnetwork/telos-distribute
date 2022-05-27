@@ -22,7 +22,7 @@ const uint64_t rex_interval = 1800;
 
 const uint64_t max_econdev_amount = 16438;
 const uint64_t max_tf_amount = 32876;
-const uint64_t max_rex_amount = 685;
+const uint64_t max_rex_amount = 1165;
 
 BOOST_AUTO_TEST_SUITE(eosio_tedp_tests)
 
@@ -35,6 +35,9 @@ BOOST_FIXTURE_TEST_CASE( set_payouts, eosio_tedp_tester ) try {
 
     validate_payout([&](uint64_t amount) -> transaction_trace_ptr { return setrex(amount); }, 
         name("eosio.rex"), max_rex_amount, rex_interval);
+
+    validate_payout([&](uint64_t amount) -> transaction_trace_ptr { return setevmstake(amount); },
+        name("eosio.evm"), max_rex_amount - 10, rex_interval);
 
     validate_payout([&](uint64_t amount) -> transaction_trace_ptr { return setrex(amount); }, 
         name("eosio.rex"), max_rex_amount - 10, rex_interval);
@@ -50,8 +53,12 @@ BOOST_FIXTURE_TEST_CASE( set_payouts, eosio_tedp_tester ) try {
 		eosio_assert_message_exception, eosio_assert_message_is( "Max amount for econdevfunds account is 16438 per day" ) 
    	);
 
+    BOOST_REQUIRE_EXCEPTION(setevmstake(max_rex_amount + 1),
+		eosio_assert_message_exception, eosio_assert_message_is( "Max amount for eosio.evm account is 1165 per 30min" )
+   	);
+
     BOOST_REQUIRE_EXCEPTION(setrex(max_rex_amount + 1),
-		eosio_assert_message_exception, eosio_assert_message_is( "Max amount for eosio.rex account is 685 per 30min" ) 
+		eosio_assert_message_exception, eosio_assert_message_is( "Max amount for eosio.rex account is 1165 per 30min" )
    	);
 
     validate_payout_del([&](const name payout_name) -> transaction_trace_ptr {
@@ -61,6 +68,10 @@ BOOST_FIXTURE_TEST_CASE( set_payouts, eosio_tedp_tester ) try {
     validate_payout_del([&](const name payout_name) -> transaction_trace_ptr {
         return delpayout(payout_name);
     }, name("econdevfunds"));
+
+    validate_payout_del([&](const name payout_name) -> transaction_trace_ptr {
+        return delpayout(payout_name);
+    }, name("eosio.evm"));
 
     validate_payout_del([&](const name payout_name) -> transaction_trace_ptr {
         return delpayout(payout_name);
@@ -82,6 +93,9 @@ BOOST_FIXTURE_TEST_CASE( pay_flow, eosio_tedp_tester ) try {
     BOOST_REQUIRE_EQUAL( get_rex_vote_stake(alice).get_amount(), get_voter_info(alice)["staked"].as<int64_t>() - init_stake );
 
     const asset fee = core_sym::from_string("50.0000");
+
+    configure(0.4);
+
     BOOST_REQUIRE_EQUAL( success(),                              rentcpu( emily, bob, fee ) );
 
     BOOST_REQUIRE_EQUAL( success(),                              updaterex( alice ) );
@@ -96,6 +110,9 @@ BOOST_FIXTURE_TEST_CASE( pay_flow, eosio_tedp_tester ) try {
 
     validate_payout([&](uint64_t amount) -> transaction_trace_ptr { return setrex(amount); }, 
         name("eosio.rex"), max_rex_amount, rex_interval);
+
+    validate_payout([&](uint64_t amount) -> transaction_trace_ptr { return setevmstake(amount); },
+        name("eosio.evm"), max_rex_amount, rex_interval);
 
     auto dump_trace = [&](transaction_trace_ptr trace_ptr) -> transaction_trace_ptr {
         cout << endl << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << endl;
@@ -119,6 +136,7 @@ BOOST_FIXTURE_TEST_CASE( pay_flow, eosio_tedp_tester ) try {
 
     asset initial_tf_balance = get_balance("tf"_n);
     asset initial_econ_balance = get_balance("econdevfunds"_n);
+    asset initial_evm_balance = get_balance("eosio.evm"_n);
 
     auto trace = dump_trace(payout());
     BOOST_REQUIRE_EQUAL(transaction_receipt::executed, trace->receipt->status);
@@ -138,8 +156,11 @@ BOOST_FIXTURE_TEST_CASE( pay_flow, eosio_tedp_tester ) try {
             BOOST_REQUIRE_EQUAL(rex_pool["total_unlent"].as<asset>(), initial_total_unlent + total_payout);
             BOOST_REQUIRE_EQUAL(rex_pool["total_lendable"].as<asset>(), initial_total_lendable + total_payout);
         } else {
-            auto initial_balance = (payout == "econdevfunds"_n ? initial_econ_balance : initial_tf_balance);
-            cout << "initial_balance: " << initial_balance << endl;
+            auto initial_balance = initial_evm_balance;
+            if(payout_info["to"].as<name>() != "eosio.evm"_n) {
+                initial_balance = (payout == "econdevfunds"_n ? initial_econ_balance : initial_tf_balance);
+                cout << "initial_balance: " << initial_balance << endl;
+            }
             BOOST_REQUIRE_EQUAL(get_balance(payout), initial_balance + total_payout);
         }
     }
@@ -155,6 +176,7 @@ BOOST_FIXTURE_TEST_CASE( pay_flow, eosio_tedp_tester ) try {
 
     initial_tf_balance = get_balance("tf"_n);
     initial_econ_balance = get_balance("econdevfunds"_n);
+    initial_evm_balance = get_balance("eosio.evm"_n);
 
     trace = dump_trace(payout());
     BOOST_REQUIRE_EQUAL(transaction_receipt::executed, trace->receipt->status);
@@ -172,7 +194,10 @@ BOOST_FIXTURE_TEST_CASE( pay_flow, eosio_tedp_tester ) try {
             BOOST_REQUIRE_EQUAL(rex_pool["total_unlent"].as<asset>(), initial_total_unlent + total_payout);
             BOOST_REQUIRE_EQUAL(rex_pool["total_lendable"].as<asset>(), initial_total_lendable + total_payout);
         } else {
-            auto initial_balance = (payout == "econdevfunds"_n ? initial_econ_balance : initial_tf_balance);
+            auto initial_balance = initial_evm_balance;
+            if(payout_info["to"].as<name>() != "eosio.evm"_n) {
+                initial_balance = (payout == "econdevfunds"_n ? initial_econ_balance : initial_tf_balance);
+            }
             BOOST_REQUIRE_EQUAL(get_balance(payout), initial_balance + total_payout);
         }
     }
