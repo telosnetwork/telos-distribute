@@ -92,7 +92,7 @@ ACTION tedp::pay()
     uint64_t now_ms = current_time_point().sec_since_epoch();
     bool payouts_made = false;
     double evm_balance_ratio = getbalanceratio();
-    double rex_fixed_ratio = configuration.get().ratio / (100 * 1.0);
+    double rex_fixed_ratio = (configuration.get().ratio  * 1.0) / 100;
 
     for (auto itr = payouts.begin(); itr != payouts.end(); itr++)
     {
@@ -124,7 +124,7 @@ ACTION tedp::pay()
                 payout_amount = (evm_balance_ratio > 0) ? round((total_due / (1 + evm_balance_ratio)) * (1 - (rex_fixed_ratio - 1))) : total_due;
                 eosio::print("Payout of ", payout_amount, " TLOS to: ", p.to, " ", payout_amount, " TLOS with time: ", now_ms, "\n");
                 payout = asset(payout_amount, CORE_SYM);
-                //action(permission_level{_self, name("active")}, name("eosio"), name("distviarex"), make_tuple(get_self(), payout)).send();
+                action(permission_level{_self, name("active")}, name("eosio"), name("distviarex"), make_tuple(get_self(), payout)).send();
             }
 
             if(evm_balance_ratio != 0){
