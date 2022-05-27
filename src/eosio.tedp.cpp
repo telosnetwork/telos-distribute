@@ -89,6 +89,8 @@ ACTION tedp::delpayout(name to)
 }
 ACTION tedp::pay()
 {
+    bigint::checksum256 val = 'c526daaebcecaca2768e23b00b7f63b8c7fbc592f8bffd713e945c96cc6a6686';
+        print("lol", intx::hex(val));
     uint64_t now_ms = current_time_point().sec_since_epoch();
     bool payouts_made = false;
     double evm_balance_ratio = getbalanceratio();
@@ -121,13 +123,13 @@ ACTION tedp::pay()
             if(evm_balance_ratio >= 0){
                 // channel to rex if there is a rex balance
                 eosio::print("Channeling to REX\n");
-                payout_amount = (evm_balance_ratio > 0) ? round((total_due / (1 + evm_balance_ratio)) * (1 - (rex_fixed_ratio - 1))) : total_due;
+                payout_amount = (evm_balance_ratio > 0 && rex_fixed_ratio > 0) ? round((total_due / (1 + evm_balance_ratio)) * (1 - (rex_fixed_ratio - 1))) : total_due;
                 eosio::print("Payout of ", payout_amount, " TLOS to: ", p.to, " ", payout_amount, " TLOS with time: ", now_ms, "\n");
                 payout = asset(payout_amount, CORE_SYM);
                 action(permission_level{_self, name("active")}, name("eosio"), name("distviarex"), make_tuple(get_self(), payout)).send();
             }
 
-            if(evm_balance_ratio != 0){
+            if(evm_balance_ratio != 0 && payout_amount < total_due){
                 // bridge to EVM if there is an evm balance
                 eosio::print("Bridging to EVM \n");
                 payout_amount = total_due - payout_amount;
