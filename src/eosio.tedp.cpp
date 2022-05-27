@@ -88,9 +88,7 @@ ACTION tedp::delpayout(name to)
     payouts.erase(itr);
 }
 ACTION tedp::pay()
-{
-    bigint::checksum256 val = 'c526daaebcecaca2768e23b00b7f63b8c7fbc592f8bffd713e945c96cc6a6686';
-        print("lol", intx::hex(val));
+{ 
     uint64_t now_ms = current_time_point().sec_since_epoch();
     bool payouts_made = false;
     double evm_balance_ratio = getbalanceratio();
