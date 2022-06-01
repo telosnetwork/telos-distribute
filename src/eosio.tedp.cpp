@@ -27,7 +27,7 @@ const uint64_t max_coredev_amount = 9863;
 const uint64_t max_rex_amount = 1165;
 
 // Storage key for STLOS' WTLOS balance in eosio.evm AccountStates table
-const auto stlos_balance_storage_key = eosio_evm::toChecksum256(intx::from_string<uint256_t>("0x1f26a95fb88c50fec75762c1fa2f66d147ee08e2adad92bb20a5d9e530c53abb"));
+const std::string stlos_balance_storage_key = "0x1f26a95fb88c50fec75762c1fa2f66d147ee08e2adad92bb20a5d9e530c53abb";
 
 // stlos address on Telos EVM
 const std::string stlos = "0x85Ea6e3e3ee1db508236510B57c65251cF72191d";
@@ -157,7 +157,7 @@ double tedp::getbalanceratio()
     uint256_t evm_balance;
 
     auto account_states_by_key = account_states.get_index<"bykey"_n>();
-    auto account_state  = account_states_by_key.find(stlos_balance_storage_key);
+    auto account_state  = account_states_by_key.find(eosio_evm::toChecksum256(intx::from_string<uint256_t>(stlos_balance_storage_key)));
     if(account_state != account_states_by_key.end()){
         evm_balance = account_state->value;
     }
