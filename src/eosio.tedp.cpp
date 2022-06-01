@@ -146,7 +146,7 @@ ACTION tedp::setconfig(uint64_t ratio_value) {
    check(ratio_value < 200 && ratio_value > 0, "Ratio value must be between 0 and 200%");
    auto entry_stored = configuration.get_or_create(get_self(), config_row);
    entry_stored.ratio = ratio_value;
-   configuration.set(get_self(), SYSTEM_ACCOUNT);
+   configuration.set(entry_stored, get_self());
 }
 
 double tedp::getbalanceratio()
