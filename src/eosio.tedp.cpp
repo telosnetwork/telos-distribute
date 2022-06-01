@@ -60,7 +60,7 @@ void tedp::setrex(uint64_t amount) {
 
 void tedp::setpayout(name to, uint64_t amount, uint64_t interval)
 {
-    require_auth(get_self());
+    require_auth(SYSTEM_ACCOUNT);
     check(is_account(to), "The payee is not a valid account");
     auto itr = payouts.find(to.value);
     if (itr == payouts.end())
@@ -83,11 +83,12 @@ void tedp::setpayout(name to, uint64_t amount, uint64_t interval)
 
 ACTION tedp::delpayout(name to)
 {
-    require_auth(name("eosio"));
+    require_auth(SYSTEM_ACCOUNT);
     auto itr = payouts.find(to.value);
     check(itr != payouts.end(), "Payout does not exist, can't delete");
     payouts.erase(itr);
 }
+
 ACTION tedp::pay()
 {
     uint64_t now_ms = current_time_point().sec_since_epoch();
@@ -141,11 +142,11 @@ ACTION tedp::pay()
 }
 
 ACTION tedp::setconfig(uint64_t ratio_value) {
-   require_auth(get_self());
+   require_auth(SYSTEM_ACCOUNT);
    check(ratio_value < 200 && ratio_value > 0, "Ratio value must be between 0 and 200%");
    auto entry_stored = configuration.get_or_create(get_self(), config_row);
    entry_stored.ratio = ratio_value;
-   configuration.set(entry_stored, get_self());
+   configuration.set(get_self(), SYSTEM_ACCOUNT);
 }
 
 double tedp::getbalanceratio()
