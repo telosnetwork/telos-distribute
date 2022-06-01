@@ -1,1 +1,0 @@
-exec sudo docker run -it --rm --mount type=bind,source="$(pwd)",target=/root/target 50215ea4183f bash -c "cd build && cmake .. && make -j4" && cd build && cp eosio.tedp.wasm ../telos-distribute.wasm && cp eosio.tedp.abi ../telos-distribute.abi && cd .. && cleos set contract eosio.tedp ../telos-distribute
