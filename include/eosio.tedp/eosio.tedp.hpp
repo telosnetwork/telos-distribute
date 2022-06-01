@@ -3,6 +3,7 @@
 #include <eosio/asset.hpp>
 
 #include <eosio.evm/eosio.evm.hpp>
+#include <intx/div.hpp>
 
 #include <eosio.token/eosio.token.hpp>
 
@@ -42,6 +43,7 @@ private:
     static constexpr symbol CORE_SYM = symbol("TLOS", 4);
     static constexpr name EVM_CONTRACT = name("eosio.evm");
     static constexpr name REX_CONTRACT = name("eosio.rex");
+    static constexpr name SYSTEM_ACCOUNT = name("eosio");
     void setpayout(name to, uint64_t amount, uint64_t interval);
     double getbalanceratio();
 

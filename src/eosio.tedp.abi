@@ -1,0 +1,159 @@
+{
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT ",
+    "version": "eosio::abi/1.1",
+    "types": [],
+    "structs": [
+        {
+            "name": "config",
+            "base": "",
+            "fields": [
+                {
+                    "name": "ratio",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "delpayout",
+            "base": "",
+            "fields": [
+                {
+                    "name": "to",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "pay",
+            "base": "",
+            "fields": []
+        },
+        {
+            "name": "payout",
+            "base": "",
+            "fields": [
+                {
+                    "name": "to",
+                    "type": "name"
+                },
+                {
+                    "name": "amount",
+                    "type": "uint64"
+                },
+                {
+                    "name": "interval",
+                    "type": "uint64"
+                },
+                {
+                    "name": "last_payout",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "setconfig",
+            "base": "",
+            "fields": [
+                {
+                    "name": "ratio",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "setcoredev",
+            "base": "",
+            "fields": [
+                {
+                    "name": "amount",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "setecondev",
+            "base": "",
+            "fields": [
+                {
+                    "name": "amount",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "setrex",
+            "base": "",
+            "fields": [
+                {
+                    "name": "amount",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "settf",
+            "base": "",
+            "fields": [
+                {
+                    "name": "amount",
+                    "type": "uint64"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "name": "delpayout",
+            "type": "delpayout",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "pay",
+            "type": "pay",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "setconfig",
+            "type": "setconfig",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "setcoredev",
+            "type": "setcoredev",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "setecondev",
+            "type": "setecondev",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "setrex",
+            "type": "setrex",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "settf",
+            "type": "settf",
+            "ricardian_contract": ""
+        }
+    ],
+    "tables": [
+        {
+            "name": "config",
+            "type": "config",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "payouts",
+            "type": "payout",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        }
+    ],
+    "ricardian_clauses": [],
+    "variants": []
+}
