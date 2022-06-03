@@ -111,17 +111,12 @@ ACTION tedp::pay()
 
         if (p.to == REX_CONTRACT)
         {
-            double rex_fixed_ratio = (configuration.get().ratio  * 1.0) / 100;
             double evm_balance_ratio = getbalanceratio();
             uint64_t payout_amount = 0;
             asset payout;
 
             if(evm_balance_ratio >= 0){
                 payout_amount = round((total_due / (1 + evm_balance_ratio)));
-                if(evm_balance_ratio != 0 && rex_fixed_ratio != 1){
-                    auto payout_left = total_due - payout_amount;
-                    payout_amount = total_due - (payout_left * rex_fixed_ratio);
-                }
                 payout = asset(payout_amount, CORE_SYM);
                 action(permission_level{_self, name("active")}, SYSTEM_ACCOUNT, name("distviarex"), make_tuple(get_self(), payout)).send();
             }
@@ -156,6 +151,7 @@ double tedp::getbalanceratio()
     rex_pool_table rex_pool(SYSTEM_ACCOUNT, SYSTEM_ACCOUNT.value);
 
     uint256_t evm_balance;
+    double fixed_ratio = (configuration.get().ratio  * 1.0) / 100;
 
     auto account_states_by_key = account_states.get_index<"bykey"_n>();
     auto account_state  = account_states_by_key.find(eosio_evm::toChecksum256(intx::from_string<uint256_t>(stlos_balance_storage_key)));
@@ -173,6 +169,6 @@ double tedp::getbalanceratio()
     }
     const auto evm_total = atoi(intx::to_string(intx::from_string<uint256_t>(intx::to_string(evm_balance, 10)) / pow(10, 14)).c_str()); // Loosing precision but ratio won't be affected much
     const auto rex_total = (rex_pool.begin() != rex_pool.end()) ? rex_pool.begin()->total_lendable.amount : 0;
-    return (rex_total == 0) ? -1.0 : evm_total / double(rex_total);
+    return (rex_total == 0) ? -1.0 : (evm_total * fixed_ratio) / double(rex_total);
 }
 
