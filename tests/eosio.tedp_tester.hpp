@@ -56,8 +56,17 @@ public:
         base_tester::push_action(contract, "create"_n, contract, act );
     }
 
+    void configureevm(const string stlos_contract, const string storage_key, const uint64_t wtlos_index) {
+        action act = get_action(test_account, "setevmconfig"_n, vector<permission_level>{{"eosio"_n, config::active_name}},
+			mvo()
+        ("user", "eosio"_n)
+        ("stlos_contract", stlos_contract)
+        ("storage_key", storage_key)
+        ("wtlos_index", wtlos_index));
+    }
+
     void configure(double value) {
-        action act = get_action(test_account, "setconfig"_n, vector<permission_level>{{"eosio"_n, config::active_name}},
+        action act = get_action(test_account, "setratio"_n, vector<permission_level>{{"eosio"_n, config::active_name}},
 			mvo()
         ("user", "eosio"_n)
         ("ratio", value));

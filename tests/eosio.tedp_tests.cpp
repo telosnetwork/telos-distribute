@@ -95,6 +95,7 @@ BOOST_FIXTURE_TEST_CASE( pay_flow, eosio_tedp_tester ) try {
     const asset fee = core_sym::from_string("50.0000");
 
     configure(0.4);
+    configureevm("0x85Ea6e3e3ee1db508236510B57c65251cF72191d", "1f26a95fb88c50fec75762c1fa2f66d147ee08e2adad92bb20a5d9e530c53abb", 102);
 
     BOOST_REQUIRE_EQUAL( success(),                              rentcpu( emily, bob, fee ) );
 

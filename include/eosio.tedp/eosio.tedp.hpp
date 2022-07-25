@@ -18,7 +18,10 @@ public:
     tedp(name receiver, name code, datastream<const char *> ds) : contract(receiver, code, ds), payouts(receiver, receiver.value),  configuration(receiver, receiver.value) {}
 
     [[eosio::action]]
-    void setconfig(uint64_t ratio);
+    void setratio(uint64_t ratio_value);
+
+    [[eosio::action]]
+    void setevmconfig(string stlos_contract, eosio::checksum256 storage_key, uint64_t wtlos_index);
 
     [[eosio::action]]
     void settf(uint64_t amount);
@@ -49,7 +52,11 @@ private:
 
     TABLE config {
         uint64_t ratio;
-        EOSLIB_SERIALIZE(config, (ratio))
+        uint64_t wtlos_index;
+        eosio::checksum256 storage_key;
+        string stlos_contract;
+
+        EOSLIB_SERIALIZE(config, (ratio)(wtlos_index)(storage_key)(stlos_contract))
     } config_row;
 
    struct [[eosio::table,eosio::contract("eosio.system")]] rex_pool {
@@ -82,7 +89,9 @@ private:
     using setpayout_action = action_wrapper<name("setpayout"), &tedp::setpayout>;
     using delpayout_action = action_wrapper<name("delpayout"), &tedp::delpayout>;
     using pay_action = action_wrapper<name("payout"), &tedp::pay>;
-    using setconfig_action = action_wrapper<"setconfig"_n, &tedp::setconfig>;
+    using setevmconfig_action = action_wrapper<"setevmconfig"_n, &tedp::setevmconfig>;
+    using setratio_action = action_wrapper<"setratio"_n, &tedp::setratio>;
+
     payout_table payouts;
     config_table configuration;
 };

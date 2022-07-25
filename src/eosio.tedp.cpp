@@ -26,15 +26,6 @@ const uint64_t max_coredev_amount = 9863;
 // 1.7mil * 12 months / 365 days / 24hrs / 2 (every half hour) = 1164.3835
 const uint64_t max_rex_amount = 1165;
 
-// Storage key for STLOS' WTLOS balance in eosio.evm AccountStates table
-const std::string stlos_balance_storage_key = "0x1f26a95fb88c50fec75762c1fa2f66d147ee08e2adad92bb20a5d9e530c53abb";
-
-// stlos address on Telos EVM
-const std::string stlos = "0x85Ea6e3e3ee1db508236510B57c65251cF72191d";
-
-// WTLOS Account State key
-const uint64_t wtlos_key = 102;
-
 void tedp::settf(uint64_t amount)
 {
     check(amount <= max_tf_amount, "Max amount for tf account is 32876 per day");
@@ -92,6 +83,7 @@ ACTION tedp::delpayout(name to)
 ACTION tedp::pay()
 {
     uint64_t now_ms = current_time_point().sec_since_epoch();
+    auto conf = configuration.get();
     bool payouts_made = false;
     for (auto itr = payouts.begin(); itr != payouts.end(); itr++)
     {
@@ -123,7 +115,7 @@ ACTION tedp::pay()
 
             if(evm_balance_ratio != 0 && payout_amount < total_due){
                 payout = asset((total_due - payout_amount), CORE_SYM);
-                action(permission_level{_self, name("active")}, CORE_SYM_ACCOUNT, name("transfer"), make_tuple(get_self(), EVM_CONTRACT, payout, stlos )).send();
+                action(permission_level{_self, name("active")}, CORE_SYM_ACCOUNT, name("transfer"), make_tuple(get_self(), EVM_CONTRACT, payout, conf.stlos_contract )).send();
             }
         }
         else
@@ -136,30 +128,40 @@ ACTION tedp::pay()
     check(payouts_made, "No payouts are due");
 }
 
-ACTION tedp::setconfig(uint64_t ratio_value) {
+ACTION tedp::setratio(uint64_t ratio_value) {
    require_auth(SYSTEM_ACCOUNT);
-   check(ratio_value < 200 && ratio_value > 0, "Ratio value must be between 0 and 200%");
    auto entry_stored = configuration.get_or_create(get_self(), config_row);
+   check(ratio_value < 200 && ratio_value > 0, "Ratio value must be between 0 and 200%");
    entry_stored.ratio = ratio_value;
+   configuration.set(entry_stored, get_self());
+}
+
+ACTION tedp::setevmconfig(string stlos_contract, eosio::checksum256 storage_key, uint64_t wtlos_index) {
+   require_auth(SYSTEM_ACCOUNT);
+   auto entry_stored = configuration.get_or_create(get_self(), config_row);
+   entry_stored.stlos_contract = stlos_contract;
+   entry_stored.storage_key = storage_key;
+   entry_stored.wtlos_index = wtlos_index;
    configuration.set(entry_stored, get_self());
 }
 
 double tedp::getbalanceratio()
 {
-    eosio_evm::account_state_table account_states(EVM_CONTRACT, wtlos_key);
+    auto conf = configuration.get();
+    eosio_evm::account_state_table account_states(EVM_CONTRACT, conf.wtlos_index);
     eosio_evm::account_table accounts(EVM_CONTRACT, EVM_CONTRACT.value);
     rex_pool_table rex_pool(SYSTEM_ACCOUNT, SYSTEM_ACCOUNT.value);
 
-    uint256_t evm_balance;
-    double fixed_ratio = (configuration.get().ratio  * 1.0) / 100;
+    uint256_t evm_balance = 0;
+    double fixed_ratio = (conf.ratio  * 1.0) / 100;
 
     auto account_states_by_key = account_states.get_index<"bykey"_n>();
-    auto account_state  = account_states_by_key.find(eosio_evm::toChecksum256(intx::from_string<uint256_t>(stlos_balance_storage_key)));
+    auto account_state  = account_states_by_key.find(conf.storage_key);
     if(account_state != account_states_by_key.end()){
         evm_balance = account_state->value;
     }
     auto accounts_by_address = accounts.get_index<"byaddress"_n>();
-    auto account = accounts_by_address.find(eosio_evm::toChecksum256(intx::from_string<uint256_t>(stlos)));
+    auto account = accounts_by_address.find(eosio_evm::toChecksum256(intx::from_string<uint256_t>(conf.stlos_contract)));
     if(account != accounts_by_address.end()){
         evm_balance = evm_balance + account->balance;
     }
@@ -167,8 +169,8 @@ double tedp::getbalanceratio()
     if(evm_balance == 0){
         return 0.0;
     }
+
     const auto evm_total = atoi(intx::to_string(intx::from_string<uint256_t>(intx::to_string(evm_balance, 10)) / pow(10, 14)).c_str()); // Loosing precision but ratio won't be affected much
     const auto rex_total = (rex_pool.begin() != rex_pool.end()) ? rex_pool.begin()->total_lendable.amount : 0;
     return (rex_total == 0) ? -1.0 : (evm_total * fixed_ratio) / double(rex_total);
 }
-
