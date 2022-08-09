@@ -8,6 +8,6 @@ This repository requires `cleos` installed
 
 ## Rundown
 
-Payout are sent periodically by calling the public `pay` action on the __exrsrv.tf__ contract
+Payout are sent periodically by calling the public `pay` action.
 
 If the action isn't called within the time period set in configuration, payouts are accrued over time until then. 
