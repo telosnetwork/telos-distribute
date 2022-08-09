@@ -12,4 +12,4 @@ Payout are sent periodically by calling the public `pay` action.
 
 If the action isn't called within the time period set in configuration, payouts are accrued over time until then. 
 
-The smart contract also split Staking rewards between Native's REX and EVM's sTLOS with a ratio of the total TLOS locked in each and applies an extra, configurable, ratio to the EVM rewards.
+The smart contract also split Staking rewards between Native's REX and EVM's sTLOS with a ratio of the total TLOS locked in each and applies as well an extra, configurable, ratio to the EVM rewards.
