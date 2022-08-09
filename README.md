@@ -18,13 +18,13 @@ The smart contract also split Staking rewards between Native's REX and EVM's sTL
 
 The EVM staking can be configured using the following actions:
 
-`setratio(uint64_t ratio_value)`
-- The `ratio_value` is multiplied to the rewards sent to EVM, a ratio of 90 will for example decrease EVM rewards by 10%
+- `setratio(uint64_t ratio_value)`
+  - The `ratio_value` is multiplied to the rewards sent to EVM, a ratio of 90 will for example decrease EVM rewards by 10%
 
-`setevmconfig(string stlos_contract, eosio::checksum256 storage_key, uint64_t wtlos_index)`
-- `stlos_contract` is your StakedTLOS EVM contract address
-- `storage_key` is the computed storage key for the STLOS contract WTLOS balance
-- `wtlos_index` is the index of WTLOS in the eosio.evm accounts table
+- `setevmconfig(string stlos_contract, eosio::checksum256 storage_key, uint64_t wtlos_index)`
+  - `stlos_contract` is your StakedTLOS EVM contract address
+  - `storage_key` is the computed storage key for the STLOS contract WTLOS balance
+  - `wtlos_index` is the index of WTLOS in the eosio.evm accounts table
 
 ### Get the WTLOS index
 
