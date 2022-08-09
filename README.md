@@ -4,7 +4,7 @@ This native Telos smart contract sends rewards periodically from Telos' reserves
 
 ## Requirements
 
-This repository requires
+This repository requires `cleos` installed
 
 ## Rundown
 
