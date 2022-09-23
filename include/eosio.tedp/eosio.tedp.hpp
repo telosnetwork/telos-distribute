@@ -7,7 +7,6 @@
 
 #include <eosio.token/eosio.token.hpp>
 
-
 using namespace std;
 using namespace eosio;
 

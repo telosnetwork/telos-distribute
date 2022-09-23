@@ -1,0 +1,14 @@
+# Target labels
+ contracts_unit_tests
+# Source files and their labels
+/root/target/build/CMakeFiles/contracts_unit_tests
+/root/target/build/CMakeFiles/contracts_unit_tests.rule
+/root/target/build/CMakeFiles/contracts_unit_tests-complete.rule
+/root/target/build/contracts_unit_tests-prefix/src/contracts_unit_tests-stamp/contracts_unit_tests-build.rule
+/root/target/build/contracts_unit_tests-prefix/src/contracts_unit_tests-stamp/contracts_unit_tests-configure.rule
+/root/target/build/contracts_unit_tests-prefix/src/contracts_unit_tests-stamp/contracts_unit_tests-download.rule
+/root/target/build/contracts_unit_tests-prefix/src/contracts_unit_tests-stamp/contracts_unit_tests-install.rule
+/root/target/build/contracts_unit_tests-prefix/src/contracts_unit_tests-stamp/contracts_unit_tests-mkdir.rule
+/root/target/build/contracts_unit_tests-prefix/src/contracts_unit_tests-stamp/contracts_unit_tests-patch.rule
+/root/target/build/contracts_unit_tests-prefix/src/contracts_unit_tests-stamp/contracts_unit_tests-test.rule
+/root/target/build/contracts_unit_tests-prefix/src/contracts_unit_tests-stamp/contracts_unit_tests-update.rule

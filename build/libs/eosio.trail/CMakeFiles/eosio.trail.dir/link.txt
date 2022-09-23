@@ -1,0 +1,1 @@
+/usr/bin/eosio-ld CMakeFiles/eosio.trail.dir/src/eosio.trail.cpp.obj -o eosio.trail.wasm 

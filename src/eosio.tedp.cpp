@@ -85,6 +85,8 @@ ACTION tedp::pay()
     uint64_t now_ms = current_time_point().sec_since_epoch();
     auto conf = configuration.get();
     bool payouts_made = false;
+    double evm_balance_ratio = getbalanceratio();
+
     for (auto itr = payouts.begin(); itr != payouts.end(); itr++)
     {
         auto p = *itr;
@@ -103,7 +105,6 @@ ACTION tedp::pay()
 
         if (p.to == REX_CONTRACT)
         {
-            double evm_balance_ratio = getbalanceratio();
             uint64_t payout_amount = 0;
             asset payout;
 
@@ -161,7 +162,7 @@ double tedp::getbalanceratio()
         evm_balance = account_state->value;
     }
     auto accounts_by_address = accounts.get_index<"byaddress"_n>();
-    auto account = accounts_by_address.find(eosio_evm::toChecksum256(intx::from_string<uint256_t>(conf.stlos_contract)));
+    auto account = accounts_by_address.find(eosio::checksum256(eosio_evm::toBin(conf.stlos_contract)));
     if(account != accounts_by_address.end()){
         evm_balance = evm_balance + account->balance;
     }

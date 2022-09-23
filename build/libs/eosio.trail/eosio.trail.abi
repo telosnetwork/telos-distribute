@@ -1,0 +1,1078 @@
+{
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT ",
+    "version": "eosio::abi/1.1",
+    "types": [],
+    "structs": [
+        {
+            "name": "addcandidate",
+            "base": "",
+            "fields": [
+                {
+                    "name": "publisher",
+                    "type": "name"
+                },
+                {
+                    "name": "ballot_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "new_candidate",
+                    "type": "name"
+                },
+                {
+                    "name": "info_link",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "airgrab",
+            "base": "",
+            "fields": [
+                {
+                    "name": "recipient",
+                    "type": "name"
+                },
+                {
+                    "name": "tokens",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "balance",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "tokens",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "ballot",
+            "base": "",
+            "fields": [
+                {
+                    "name": "ballot_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "table_id",
+                    "type": "uint8"
+                },
+                {
+                    "name": "reference_id",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "burntoken",
+            "base": "",
+            "fields": [
+                {
+                    "name": "balance_owner",
+                    "type": "name"
+                },
+                {
+                    "name": "amount",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "candidate",
+            "base": "",
+            "fields": [
+                {
+                    "name": "member",
+                    "type": "name"
+                },
+                {
+                    "name": "info_link",
+                    "type": "string"
+                },
+                {
+                    "name": "votes",
+                    "type": "asset"
+                },
+                {
+                    "name": "status",
+                    "type": "uint8"
+                }
+            ]
+        },
+        {
+            "name": "castvote",
+            "base": "",
+            "fields": [
+                {
+                    "name": "voter",
+                    "type": "name"
+                },
+                {
+                    "name": "ballot_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "direction",
+                    "type": "uint16"
+                }
+            ]
+        },
+        {
+            "name": "claimairgrab",
+            "base": "",
+            "fields": [
+                {
+                    "name": "claimant",
+                    "type": "name"
+                },
+                {
+                    "name": "publisher",
+                    "type": "name"
+                },
+                {
+                    "name": "token_symbol",
+                    "type": "symbol"
+                }
+            ]
+        },
+        {
+            "name": "closeballot",
+            "base": "",
+            "fields": [
+                {
+                    "name": "publisher",
+                    "type": "name"
+                },
+                {
+                    "name": "ballot_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "pass",
+                    "type": "uint8"
+                }
+            ]
+        },
+        {
+            "name": "counter_balance",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "decayable_cb",
+                    "type": "asset"
+                },
+                {
+                    "name": "persistent_cb",
+                    "type": "asset"
+                },
+                {
+                    "name": "last_decay",
+                    "type": "uint32"
+                }
+            ]
+        },
+        {
+            "name": "deloldvotes",
+            "base": "",
+            "fields": [
+                {
+                    "name": "voter",
+                    "type": "name"
+                },
+                {
+                    "name": "num_to_delete",
+                    "type": "uint16"
+                }
+            ]
+        },
+        {
+            "name": "election",
+            "base": "",
+            "fields": [
+                {
+                    "name": "election_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "publisher",
+                    "type": "name"
+                },
+                {
+                    "name": "info_url",
+                    "type": "string"
+                },
+                {
+                    "name": "candidates",
+                    "type": "candidate[]"
+                },
+                {
+                    "name": "unique_voters",
+                    "type": "uint32"
+                },
+                {
+                    "name": "voting_symbol",
+                    "type": "symbol"
+                },
+                {
+                    "name": "begin_time",
+                    "type": "uint32"
+                },
+                {
+                    "name": "end_time",
+                    "type": "uint32"
+                }
+            ]
+        },
+        {
+            "name": "env",
+            "base": "",
+            "fields": [
+                {
+                    "name": "publisher",
+                    "type": "name"
+                },
+                {
+                    "name": "totals",
+                    "type": "uint64[]"
+                },
+                {
+                    "name": "time_now",
+                    "type": "uint32"
+                },
+                {
+                    "name": "last_ballot_id",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "initsettings",
+            "base": "",
+            "fields": [
+                {
+                    "name": "publisher",
+                    "type": "name"
+                },
+                {
+                    "name": "token_symbol",
+                    "type": "symbol"
+                },
+                {
+                    "name": "new_settings",
+                    "type": "token_settings"
+                }
+            ]
+        },
+        {
+            "name": "issuetoken",
+            "base": "",
+            "fields": [
+                {
+                    "name": "publisher",
+                    "type": "name"
+                },
+                {
+                    "name": "recipient",
+                    "type": "name"
+                },
+                {
+                    "name": "tokens",
+                    "type": "asset"
+                },
+                {
+                    "name": "airgrab",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "leaderboard",
+            "base": "",
+            "fields": [
+                {
+                    "name": "board_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "publisher",
+                    "type": "name"
+                },
+                {
+                    "name": "info_url",
+                    "type": "string"
+                },
+                {
+                    "name": "candidates",
+                    "type": "candidate[]"
+                },
+                {
+                    "name": "unique_voters",
+                    "type": "uint32"
+                },
+                {
+                    "name": "voting_symbol",
+                    "type": "symbol"
+                },
+                {
+                    "name": "available_seats",
+                    "type": "uint8"
+                },
+                {
+                    "name": "begin_time",
+                    "type": "uint32"
+                },
+                {
+                    "name": "end_time",
+                    "type": "uint32"
+                },
+                {
+                    "name": "status",
+                    "type": "uint8"
+                }
+            ]
+        },
+        {
+            "name": "lowermax",
+            "base": "",
+            "fields": [
+                {
+                    "name": "publisher",
+                    "type": "name"
+                },
+                {
+                    "name": "amount",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "mirrorcast",
+            "base": "",
+            "fields": [
+                {
+                    "name": "voter",
+                    "type": "name"
+                },
+                {
+                    "name": "token_symbol",
+                    "type": "symbol"
+                }
+            ]
+        },
+        {
+            "name": "nextcycle",
+            "base": "",
+            "fields": [
+                {
+                    "name": "publisher",
+                    "type": "name"
+                },
+                {
+                    "name": "ballot_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "new_begin_time",
+                    "type": "uint32"
+                },
+                {
+                    "name": "new_end_time",
+                    "type": "uint32"
+                }
+            ]
+        },
+        {
+            "name": "proposal",
+            "base": "",
+            "fields": [
+                {
+                    "name": "prop_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "publisher",
+                    "type": "name"
+                },
+                {
+                    "name": "info_url",
+                    "type": "string"
+                },
+                {
+                    "name": "no_count",
+                    "type": "asset"
+                },
+                {
+                    "name": "yes_count",
+                    "type": "asset"
+                },
+                {
+                    "name": "abstain_count",
+                    "type": "asset"
+                },
+                {
+                    "name": "unique_voters",
+                    "type": "uint32"
+                },
+                {
+                    "name": "begin_time",
+                    "type": "uint32"
+                },
+                {
+                    "name": "end_time",
+                    "type": "uint32"
+                },
+                {
+                    "name": "cycle_count",
+                    "type": "uint16"
+                },
+                {
+                    "name": "status",
+                    "type": "uint8"
+                }
+            ]
+        },
+        {
+            "name": "raisemax",
+            "base": "",
+            "fields": [
+                {
+                    "name": "publisher",
+                    "type": "name"
+                },
+                {
+                    "name": "amount",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "regballot",
+            "base": "",
+            "fields": [
+                {
+                    "name": "publisher",
+                    "type": "name"
+                },
+                {
+                    "name": "ballot_type",
+                    "type": "uint8"
+                },
+                {
+                    "name": "voting_symbol",
+                    "type": "symbol"
+                },
+                {
+                    "name": "begin_time",
+                    "type": "uint32"
+                },
+                {
+                    "name": "end_time",
+                    "type": "uint32"
+                },
+                {
+                    "name": "info_url",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "registry",
+            "base": "",
+            "fields": [
+                {
+                    "name": "max_supply",
+                    "type": "asset"
+                },
+                {
+                    "name": "supply",
+                    "type": "asset"
+                },
+                {
+                    "name": "total_voters",
+                    "type": "uint32"
+                },
+                {
+                    "name": "total_proxies",
+                    "type": "uint32"
+                },
+                {
+                    "name": "publisher",
+                    "type": "name"
+                },
+                {
+                    "name": "info_url",
+                    "type": "string"
+                },
+                {
+                    "name": "settings",
+                    "type": "token_settings"
+                }
+            ]
+        },
+        {
+            "name": "regtoken",
+            "base": "",
+            "fields": [
+                {
+                    "name": "max_supply",
+                    "type": "asset"
+                },
+                {
+                    "name": "publisher",
+                    "type": "name"
+                },
+                {
+                    "name": "info_url",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "regvoter",
+            "base": "",
+            "fields": [
+                {
+                    "name": "voter",
+                    "type": "name"
+                },
+                {
+                    "name": "token_symbol",
+                    "type": "symbol"
+                }
+            ]
+        },
+        {
+            "name": "rmvcandidate",
+            "base": "",
+            "fields": [
+                {
+                    "name": "publisher",
+                    "type": "name"
+                },
+                {
+                    "name": "ballot_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "candidate",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "seizeairgrab",
+            "base": "",
+            "fields": [
+                {
+                    "name": "publisher",
+                    "type": "name"
+                },
+                {
+                    "name": "recipient",
+                    "type": "name"
+                },
+                {
+                    "name": "amount",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "seizebygroup",
+            "base": "",
+            "fields": [
+                {
+                    "name": "publisher",
+                    "type": "name"
+                },
+                {
+                    "name": "group",
+                    "type": "name[]"
+                },
+                {
+                    "name": "amount",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "seizetoken",
+            "base": "",
+            "fields": [
+                {
+                    "name": "publisher",
+                    "type": "name"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "tokens",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "setallcands",
+            "base": "",
+            "fields": [
+                {
+                    "name": "publisher",
+                    "type": "name"
+                },
+                {
+                    "name": "ballot_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "new_candidates",
+                    "type": "candidate[]"
+                }
+            ]
+        },
+        {
+            "name": "setallstats",
+            "base": "",
+            "fields": [
+                {
+                    "name": "publisher",
+                    "type": "name"
+                },
+                {
+                    "name": "ballot_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "new_cand_statuses",
+                    "type": "uint8[]"
+                }
+            ]
+        },
+        {
+            "name": "setseats",
+            "base": "",
+            "fields": [
+                {
+                    "name": "publisher",
+                    "type": "name"
+                },
+                {
+                    "name": "ballot_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "num_seats",
+                    "type": "uint8"
+                }
+            ]
+        },
+        {
+            "name": "token_settings",
+            "base": "",
+            "fields": [
+                {
+                    "name": "is_destructible",
+                    "type": "bool"
+                },
+                {
+                    "name": "is_proxyable",
+                    "type": "bool"
+                },
+                {
+                    "name": "is_burnable",
+                    "type": "bool"
+                },
+                {
+                    "name": "is_seizable",
+                    "type": "bool"
+                },
+                {
+                    "name": "is_max_mutable",
+                    "type": "bool"
+                },
+                {
+                    "name": "is_transferable",
+                    "type": "bool"
+                },
+                {
+                    "name": "is_recastable",
+                    "type": "bool"
+                },
+                {
+                    "name": "is_initialized",
+                    "type": "bool"
+                },
+                {
+                    "name": "counterbal_decay_rate",
+                    "type": "uint32"
+                },
+                {
+                    "name": "lock_after_initialize",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "transfer",
+            "base": "",
+            "fields": [
+                {
+                    "name": "sender",
+                    "type": "name"
+                },
+                {
+                    "name": "recipient",
+                    "type": "name"
+                },
+                {
+                    "name": "amount",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "unregballot",
+            "base": "",
+            "fields": [
+                {
+                    "name": "publisher",
+                    "type": "name"
+                },
+                {
+                    "name": "ballot_id",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "unregtoken",
+            "base": "",
+            "fields": [
+                {
+                    "name": "token_symbol",
+                    "type": "symbol"
+                },
+                {
+                    "name": "publisher",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "unregvoter",
+            "base": "",
+            "fields": [
+                {
+                    "name": "voter",
+                    "type": "name"
+                },
+                {
+                    "name": "token_symbol",
+                    "type": "symbol"
+                }
+            ]
+        },
+        {
+            "name": "vote_receipt",
+            "base": "",
+            "fields": [
+                {
+                    "name": "ballot_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "directions",
+                    "type": "uint16[]"
+                },
+                {
+                    "name": "weight",
+                    "type": "asset"
+                },
+                {
+                    "name": "expiration",
+                    "type": "uint32"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "name": "addcandidate",
+            "type": "addcandidate",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "burntoken",
+            "type": "burntoken",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "castvote",
+            "type": "castvote",
+            "ricardian_contract": "This human-language contract for the `eosio.trail` action `castvote` is legally binding and can be used in the event of a dispute. Disputes shall be settled through arbitration by Telos Elected Arbitrators as described in the Telos Blockchain Network Operating Agreement and the Telos Blockchain Network Arbitration Rules and Procedures.\n\n### Parameters\n\n* **voter** (name of the account casting its votes)\n\n* **ballot_id** (ID of the ballot measure for which the votes shall be cast)\n\n* **direction** (direction in which votes are cast - 0 = NO, 1 = YES, 2 = ABSTAIN)\n\n### Intent\n\nThe intention of the authors and the invoker of this contract is to cast votes in a given ballot measure matching the Member's amount of VOTE tokens in the direction specified by the voter (YES, NO, or ABSTAIN). It shall have no other effect.\n\n### Body\n\nI attest that I am the owner or authorized user of this account {{voter}} and that I intend to cast my VOTE tokens on ballot measure: {{ballot_id}} as: {{direction}}, where the values 0 = NO, 1 = YES, 2 = ABSTAIN."
+        },
+        {
+            "name": "claimairgrab",
+            "type": "claimairgrab",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "closeballot",
+            "type": "closeballot",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "deloldvotes",
+            "type": "deloldvotes",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "initsettings",
+            "type": "initsettings",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "issuetoken",
+            "type": "issuetoken",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "lowermax",
+            "type": "lowermax",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "mirrorcast",
+            "type": "mirrorcast",
+            "ricardian_contract": "This human-language contract for the `eosio.trail` action `mirrorcast` is legally binding and can be used in the event of a dispute. Disputes shall be settled through arbitration by Telos Elected Arbitrators as described in the Telos Blockchain Network Operating Agreement and the Telos Blockchain Network Arbitration Rules and Procedures.\n\nThe mirrorcast function is the fundamental action that operates the Trail voting system. Member can only invoke mirrorcast once per day.\n\n### Parameters\n\n* **voter** (name of the account attempting to claim VOTE tokens)\n\n* **token_symbol** (symbol of the token to mirrorcast into Trail)\n\n### Intent\n\nThe intention of the authors and the invoker of this contract is to allow a registered voter to receive a 1:1 issuance of VOTE tokens for every TLOS they own in their account (both liquid and staked) a maximum of once per day. It shall have no other effect.\n\n### Body\n\nI attest that I am the owner or authorized user of this account {{voter}} and a registered Telos voter and that I intend to claim an issuance of VOTE tokens that matches my current balance of {{token_symbol}} tokens, both staked and unstaked."
+        },
+        {
+            "name": "nextcycle",
+            "type": "nextcycle",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "raisemax",
+            "type": "raisemax",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "regballot",
+            "type": "regballot",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "regtoken",
+            "type": "regtoken",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "regvoter",
+            "type": "regvoter",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "rmvcandidate",
+            "type": "rmvcandidate",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "seizeairgrab",
+            "type": "seizeairgrab",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "seizebygroup",
+            "type": "seizebygroup",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "seizetoken",
+            "type": "seizetoken",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "setallcands",
+            "type": "setallcands",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "setallstats",
+            "type": "setallstats",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "setseats",
+            "type": "setseats",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "transfer",
+            "type": "transfer",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "unregballot",
+            "type": "unregballot",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "unregtoken",
+            "type": "unregtoken",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "unregvoter",
+            "type": "unregvoter",
+            "ricardian_contract": ""
+        }
+    ],
+    "tables": [
+        {
+            "name": "airgrabs",
+            "type": "airgrab",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "balances",
+            "type": "balance",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "ballots",
+            "type": "ballot",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "counterbals",
+            "type": "counter_balance",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "elections",
+            "type": "election",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "environment",
+            "type": "env",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "leaderboards",
+            "type": "leaderboard",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "proposals",
+            "type": "proposal",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "registries",
+            "type": "registry",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "votereceipts",
+            "type": "vote_receipt",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        }
+    ],
+    "ricardian_clauses": [
+        {
+            "id": "Intent",
+            "body": "The intention of the authors and invoker of this smart contract is to manage and use the Trail service.\n\nOne intended usage of the service is receive VOTE tokens to mirror the amount of TLOS tokens held by the Member, up to daily. Another is to cast these VOTE tokens for a ballot measure.\n\nAll actions of this smart contract are governed by the Telos Blockchain Network Core Governance Documents referenced below and inherits the defined terms of those documents. Any person invoking this contract accepts these documents as binding agreements in all matters related to the use or recording of information on the Telos Blockchain Network.\n\n**The \"Telos Blockchain Network Core Governance Documents\" are comprised of:**\n\n* [Telos Blockchain Network Operating Agreement](https://web.ipfs.telosfoundation.io/Qmexc2Uejr2f5f8bCQxTkt5CfTAC9szXLpG6mu6No7pmVs)\n\n* [Telos Blockchain Network Arbitration Rules and Procedures](https://web.ipfs.telosfoundation.io/QmWZEpPcudrAmQ9tzi8rCpdqAFfVjuAKc6vkpMRRa2hXsz) \n\n* [Telos Regproducer contract](https://web.ipfs.telosfoundation.io/QmSwzSPZf2xpvjKV6qWRodAVD8uYZpKZ1WfzTEA825RjfR) \n\n* [Telos Regarb contract](https://web.ipfs.telosfoundation.io/QmWXmx9KAZZ6dcxT67Ap4WHivfJ5s1nFgMFXpHyriCkNCR) \n\n* [Telos Block Producer Minimum Requirements](https://web.ipfs.telosfoundation.io/QmUvx45rtKr3H4SYf3Kei7AjEPEfKvxspBV4AXAEqWsyXU) \n\n* [Telos Arbitrator Minimum Requirements](https://web.ipfs.telosfoundation.io/QmfW8UGVUKLVsacy58eTmFLqLMaT1STxaycJFnCpNfhV82) \n\n* [Telos Blockchain Network Data Protection Policy](https://web.ipfs.telosfoundation.io/QmeYV6f4B5S2z3CycASNVHSLtMzcJzWRyam4Q1WzFAtsLe) \n\n**Translations:**\n\n* [TBNOA - Chinese language version](https://web.ipfs.telosfoundation.io/QmTWZG5moSZbH63Hk5oH4KRYshMDwH7kjyktqHa65jZUvA) \n\n* [TBNOA - Korean language version](https://web.ipfs.telosfoundation.io/QmVGMcfWsGqFi9TR1QEk6W8thRY4f9et9nX8WJLXQvWtqb)"
+        },
+        {
+            "id": "Term",
+            "body": "This Contract expires at the conclusion of code execution."
+        },
+        {
+            "id": "Warranty",
+            "body": "{{ name }} shall uphold its Obligations under this Contract in a timely and workmanlike manner, using knowledge and recommendations for performing the services which meet generally acceptable standards set forth by Telos Blockchain Network Block Producers."
+        },
+        {
+            "id": "Default",
+            "body": "The occurrence of any of the following shall constitute a material default under this Contract:"
+        },
+        {
+            "id": "Remedies",
+            "body": "In addition to any and all other rights a party may have available according to law, if a party defaults by failing to substantially perform any provision, term or condition of this Contract, the other party may terminate the Contract by providing written notice to the defaulting party. This notice shall describe with sufficient detail the nature of the default. The party receiving such notice shall promptly be removed from being a Block Producer and this Contract shall be automatically terminated.\""
+        },
+        {
+            "id": "Force Majeure",
+            "body": "If performance of this Contract or any obligation under this Contract is prevented, restricted, or interfered with by causes beyond either party's reasonable control (\\\"Force Majeure\\\"), and if the party unable to carry out its obligations gives the other party prompt written notice of such event, then the obligations of the party invoking this provision shall be suspended to the extent necessary by such event. The term Force Majeure shall include, without limitation, acts of God, fire, explosion, vandalism, storm or other similar occurrence, orders or acts of military or civil authority, or by national emergencies, insurrections, riots, or wars, or strikes, lock-outs, work stoppages, or supplier failures. The excused party shall use reasonable efforts under the circumstances to avoid or remove such causes of non-performance and shall proceed to perform with reasonable dispatch whenever such causes are removed or ceased. An act or omission shall be deemed within the reasonable control of a party if committed, omitted, or caused by such party, or its employees, officers, agents, or affiliates.\""
+        },
+        {
+            "id": "Dispute Resolution",
+            "body": "Any controversies or disputes arising out of or relating to this Contract will be resolved by binding arbitration under Telos Blockchain Network Arbitration Rules and Procedures. The arbitrator's award will be final.\""
+        },
+        {
+            "id": "Entire Agreement",
+            "body": "This Contract contains the entire agreement of the parties, and there are no other promises or conditions in any other agreement whether oral or written concerning the subject matter of this Contract. This Contract supersedes any prior written or oral agreements between the parties, except for the Telos Blockchain Network Core Governance Documents\""
+        },
+        {
+            "id": "Severability",
+            "body": "If any provision of this Contract will be held to be invalid or unenforceable for any reason, the remaining provisions will continue to be valid and enforceable. If a court finds that any provision of this Contract is invalid or unenforceable, but that by limiting such provision it would become valid and enforceable, then such provision will be deemed to be written, construed, and enforced as so limited.\""
+        },
+        {
+            "id": "Governing Law",
+            "body": "This Contract shall be construed in accordance with the Telos Blockchain Network Core Governance Documents, previously referenced."
+        },
+        {
+            "id": "Notice",
+            "body": "Any notice or communication required or permitted under this Contract shall be sufficiently given if delivered to a verifiable email address or to such other email address as one party may have publicly furnished in writing, or published on a broadcast contract provided by this blockchain for purposes of providing notices of this type."
+        },
+        {
+            "id": "Waiver of Contractual Right",
+            "body": "The failure of either party to enforce any provision of this Contract shall not be construed as a waiver or limitation of that party's right to subsequently enforce and compel strict compliance with every provision of this Contract."
+        },
+        {
+            "id": "Arbitrator's Fees to Prevailing Party",
+            "body": "In any action arising hereunder or any separate action pertaining to the validity of this Agreement, both sides shall pay half the initial cost of arbitration, and the prevailing party shall be awarded reasonable arbitrator's fees and costs."
+        },
+        {
+            "id": "Construction and Interpretation",
+            "body": "The rule requiring construction or interpretation against the drafter is waived. The document shall be deemed as if it were drafted by both parties in a mutual effort.\""
+        },
+        {
+            "id": "In Witness Whereof",
+            "body": "IN WITNESS WHEREOF, the parties hereto have caused this Agreement to be executed by themselves or their duly authorized representatives as of the date of execution, and authorized as proven by the cryptographic signature on the transaction that invokes this contract."
+        }
+    ],
+    "variants": []
+}

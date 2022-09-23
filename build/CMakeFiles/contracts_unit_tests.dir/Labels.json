@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/root/target/build/CMakeFiles/contracts_unit_tests"
+		},
+		{
+			"file" : "/root/target/build/CMakeFiles/contracts_unit_tests.rule"
+		},
+		{
+			"file" : "/root/target/build/CMakeFiles/contracts_unit_tests-complete.rule"
+		},
+		{
+			"file" : "/root/target/build/contracts_unit_tests-prefix/src/contracts_unit_tests-stamp/contracts_unit_tests-build.rule"
+		},
+		{
+			"file" : "/root/target/build/contracts_unit_tests-prefix/src/contracts_unit_tests-stamp/contracts_unit_tests-configure.rule"
+		},
+		{
+			"file" : "/root/target/build/contracts_unit_tests-prefix/src/contracts_unit_tests-stamp/contracts_unit_tests-download.rule"
+		},
+		{
+			"file" : "/root/target/build/contracts_unit_tests-prefix/src/contracts_unit_tests-stamp/contracts_unit_tests-install.rule"
+		},
+		{
+			"file" : "/root/target/build/contracts_unit_tests-prefix/src/contracts_unit_tests-stamp/contracts_unit_tests-mkdir.rule"
+		},
+		{
+			"file" : "/root/target/build/contracts_unit_tests-prefix/src/contracts_unit_tests-stamp/contracts_unit_tests-patch.rule"
+		},
+		{
+			"file" : "/root/target/build/contracts_unit_tests-prefix/src/contracts_unit_tests-stamp/contracts_unit_tests-test.rule"
+		},
+		{
+			"file" : "/root/target/build/contracts_unit_tests-prefix/src/contracts_unit_tests-stamp/contracts_unit_tests-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"contracts_unit_tests"
+		],
+		"name" : "contracts_unit_tests"
+	}
+}
