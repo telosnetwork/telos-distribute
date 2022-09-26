@@ -4,32 +4,58 @@
 #include <eosio/crypto.hpp>
 #include <eosio/dispatcher.hpp>
 
+#include <cmath>
+
 namespace eosiosystem {
 
    using eosio::current_time_point;
    using eosio::token;
 
+   double get_continuous_rate(int64_t annual_rate) {
+      return std::log1p(double(annual_rate)/double(100*inflation_precision));
+   }
+
    system_contract::system_contract( name s, name code, datastream<const char*> ds )
    :native(s,code,ds),
-    _voters(_self, _self.value),
-    _producers(_self, _self.value),
-    _global(_self, _self.value),
-    _rammarket(_self, _self.value),
-    _schedule_metrics(_self, _self.value),
-    _rotation(_self, _self.value),
-    _payrate(_self, _self.value),
-    _payments(_self, _self.value),
-	_rexpool(_self, _self.value),
-    _rexfunds(_self, _self.value),
-    _rexbalance(_self, _self.value),
-    _rexorders(_self, _self.value)
-   {
-      //print( "construct system\n" );
-      _gstate  = _global.exists() ? _global.get() : get_default_parameters();
+    _voters(get_self(), get_self().value),
+    _producers(get_self(), get_self().value),
+    _producers2(get_self(), get_self().value),
+    _global(get_self(), get_self().value),
+    _global2(get_self(), get_self().value),
+    _global3(get_self(), get_self().value),
+    _global4(get_self(), get_self().value),
+    _rammarket(get_self(), get_self().value),
+    _rexpool(get_self(), get_self().value),
+    _rexretpool(get_self(), get_self().value),
+    _rexretbuckets(get_self(), get_self().value),
+    _rexfunds(get_self(), get_self().value),
+    _rexbalance(get_self(), get_self().value),
+    _rexorders(get_self(), get_self().value),
 
-      _gschedule_metrics = _schedule_metrics.get_or_create(_self, schedule_metrics_state{ name(0), 0, std::vector<producer_metric>() });
-      _grotation = _rotation.get_or_create(_self, rotation_state{ name(0), name(0), 21, 75, block_timestamp(), block_timestamp() });
-      _gpayrate = _payrate.get_or_create(_self, payrates{ max_bpay_rate, max_worker_monthly_amount });
+    // BEGIN TELOS ADDITIONS
+    _schedule_metrics(get_self(), get_self().value),
+    _rotation(get_self(), get_self().value),
+    _payrate(get_self(), get_self().value),
+    _payments(get_self(), get_self().value)
+    // END TELOS ADDITIONS
+   {
+      _gstate  = _global.exists() ? _global.get() : get_default_parameters();
+      _gstate2 = _global2.exists() ? _global2.get() : eosio_global_state2{};
+      _gstate3 = _global3.exists() ? _global3.get() : eosio_global_state3{};
+      _gstate4 = _global4.exists() ? _global4.get() : get_default_inflation_parameters();
+
+      // TELOS SPECIFIC
+      _gschedule_metrics = _schedule_metrics.get_or_create(
+          get_self(),
+          schedule_metrics_state{ name(0), 0, std::vector<producer_metric>() });
+
+      _grotation = _rotation.get_or_create(
+          get_self(),
+          rotation_state{ name(0), name(0), 21, 75, block_timestamp(), block_timestamp() });
+
+      _gpayrate = _payrate.get_or_create(
+          get_self(),
+          payrates{ max_bpay_rate, max_worker_monthly_amount });
    }
 
    eosio_global_state system_contract::get_default_parameters() {
@@ -38,16 +64,29 @@ namespace eosiosystem {
       return dp;
    }
 
+   eosio_global_state4 system_contract::get_default_inflation_parameters() {
+      eosio_global_state4 gs4;
+      gs4.continuous_rate      = get_continuous_rate(default_annual_rate);
+      gs4.inflation_pay_factor = default_inflation_pay_factor;
+      gs4.votepay_factor       = default_votepay_factor;
+      return gs4;
+   }
+
    symbol system_contract::core_symbol()const {
       const static auto sym = get_core_symbol( _rammarket );
       return sym;
    }
 
    system_contract::~system_contract() {
-      _global.set( _gstate, _self );
-      _schedule_metrics.set(_gschedule_metrics, _self);
-      _rotation.set(_grotation, _self);
-      _payrate.set(_gpayrate, _self);
+      _global.set( _gstate, get_self() );
+      _global2.set( _gstate2, get_self() );
+      _global3.set( _gstate3, get_self() );
+      _global4.set( _gstate4, get_self() );
+
+      // TELOS SPECIFIC
+      _schedule_metrics.set(_gschedule_metrics, get_self());
+      _rotation.set(_grotation, get_self());
+      _payrate.set(_gpayrate, get_self());
    }
 
    void system_contract::setram( uint64_t max_ram_size ) {
@@ -70,6 +109,7 @@ namespace eosiosystem {
       _gstate.max_ram_size = max_ram_size;
    }
 
+   // TELOS SPECIFIC: changed to use _gstate instead of _gstate2
    void system_contract::update_ram_supply() {
       auto cbt = eosio::current_block_time();
 
@@ -88,6 +128,7 @@ namespace eosiosystem {
       _gstate.last_ram_increase = cbt;
    }
 
+   // TELOS SPECIFIC: changed to use _gstate instead of _gstate2
    void system_contract::setramrate( uint16_t bytes_per_block ) {
       require_auth( get_self() );
 
@@ -95,12 +136,125 @@ namespace eosiosystem {
       _gstate.new_ram_per_block = bytes_per_block;
    }
 
-   void system_contract::setparams( const eosio::blockchain_parameters& params ) {
+#ifdef EOSIO_SYSTEM_BLOCKCHAIN_PARAMETERS
+   extern "C" [[eosio::wasm_import]] void set_parameters_packed(const void*, size_t);
+#endif
+
+   void system_contract::setparams( const blockchain_parameters_t& params ) {
       require_auth( get_self() );
       (eosio::blockchain_parameters&)(_gstate) = params;
       check( 3 <= _gstate.max_authority_depth, "max_authority_depth should be at least 3" );
+#ifndef EOSIO_SYSTEM_BLOCKCHAIN_PARAMETERS
       set_blockchain_parameters( params );
+#else
+      constexpr size_t param_count = 18;
+      // an upper bound on the serialized size
+      char buf[1 + sizeof(params) + param_count];
+      datastream<char*> stream(buf, sizeof(buf));
+
+      stream << uint8_t(17);
+      stream << uint8_t(0) << params.max_block_net_usage
+             << uint8_t(1) << params.target_block_net_usage_pct
+             << uint8_t(2) << params.max_transaction_net_usage
+             << uint8_t(3) << params.base_per_transaction_net_usage
+             << uint8_t(4) << params.net_usage_leeway
+             << uint8_t(5) << params.context_free_discount_net_usage_num
+             << uint8_t(6) << params.context_free_discount_net_usage_den
+
+             << uint8_t(7) << params.max_block_cpu_usage
+             << uint8_t(8) << params.target_block_cpu_usage_pct
+             << uint8_t(9) << params.max_transaction_cpu_usage
+             << uint8_t(10) << params.min_transaction_cpu_usage
+
+             << uint8_t(11) << params.max_transaction_lifetime
+             << uint8_t(12) << params.deferred_trx_expiration_window
+             << uint8_t(13) << params.max_transaction_delay
+             << uint8_t(14) << params.max_inline_action_size
+             << uint8_t(15) << params.max_inline_action_depth
+             << uint8_t(16) << params.max_authority_depth;
+      if(params.max_action_return_value_size)
+      {
+         stream << uint8_t(17) << params.max_action_return_value_size.value();
+         ++buf[0];
+      }
+
+      set_parameters_packed(buf, stream.tellp());
+#endif
    }
+
+#ifdef EOSIO_SYSTEM_CONFIGURABLE_WASM_LIMITS
+
+   // The limits on contract webassmebly modules
+   struct wasm_parameters
+   {
+      uint32_t max_mutable_global_bytes;
+      uint32_t max_table_elements;
+      uint32_t max_section_elements;
+      uint32_t max_linear_memory_init;
+      uint32_t max_func_local_bytes;
+      uint32_t max_nested_structures;
+      uint32_t max_symbol_bytes;
+      uint32_t max_module_bytes;
+      uint32_t max_code_bytes;
+      uint32_t max_pages;
+      uint32_t max_call_depth;
+   };
+
+   static constexpr wasm_parameters default_limits = {
+       .max_mutable_global_bytes = 1024,
+       .max_table_elements = 1024,
+       .max_section_elements = 8192,
+       .max_linear_memory_init = 64*1024,
+       .max_func_local_bytes = 8192,
+       .max_nested_structures = 1024,
+       .max_symbol_bytes = 8192,
+       .max_module_bytes = 20*1024*1024,
+       .max_code_bytes = 20*1024*1024,
+       .max_pages = 528,
+       .max_call_depth = 251
+   };
+
+   static constexpr wasm_parameters high_limits = {
+       .max_mutable_global_bytes = 8192,
+       .max_table_elements = 8192,
+       .max_section_elements = 8192,
+       .max_linear_memory_init = 16*64*1024,
+       .max_func_local_bytes = 8192,
+       .max_nested_structures = 1024,
+       .max_symbol_bytes = 8192,
+       .max_module_bytes = 20*1024*1024,
+       .max_code_bytes = 20*1024*1024,
+       .max_pages = 528,
+       .max_call_depth = 251
+   };
+
+   extern "C" [[eosio::wasm_import]] void set_wasm_parameters_packed( const void*, size_t );
+
+   void set_wasm_parameters( const wasm_parameters& params )
+   {
+      char buf[sizeof(uint32_t) + sizeof(params)] = {};
+      memcpy(buf + sizeof(uint32_t), &params, sizeof(params));
+      set_wasm_parameters_packed( buf, sizeof(buf) );
+   }
+
+   void system_contract::wasmcfg( const name& settings )
+   {
+      require_auth( get_self() );
+      if( settings == "default"_n || settings == "low"_n )
+      {
+         set_wasm_parameters( default_limits );
+      }
+      else if( settings == "high"_n )
+      {
+         set_wasm_parameters( high_limits );
+      }
+      else
+      {
+         check(false, "Unkown configuration");
+      }
+   }
+
+#endif
 
    void system_contract::setpriv( const name& account, uint8_t ispriv ) {
       require_auth( get_self() );
@@ -112,7 +266,6 @@ namespace eosiosystem {
 
       user_resources_table userres( get_self(), account.value );
       auto ritr = userres.find( account.value );
-
       check( ritr == userres.end(), "only supports unlimited accounts" );
 
       auto vitr = _voters.find( account.value );
@@ -191,7 +344,11 @@ namespace eosiosystem {
             net = ritr->net_weight.amount;
          }
 
+         _voters.modify( vitr, same_payer, [&]( auto& v ) {
+            v.flags1 = set_field( v.flags1, voter_info::flags1_fields::net_managed, false );
+         });
       } else {
+         check( *net_weight >= -1, "invalid value for net_weight" );
 
          auto vitr = _voters.find( account.value );
          if ( vitr != _voters.end() ) {
@@ -274,11 +431,27 @@ namespace eosiosystem {
       check( _gstate.revision < 255, "can not increment revision" ); // prevent wrap around
       check( revision == _gstate.revision + 1, "can only increment revision by one" );
       check( revision <= 1, // set upper bound to greatest revision supported in the code
-                    "specified revision is not yet supported by the code" );
+             "specified revision is not yet supported by the code" );
       _gstate.revision = revision;
    }
 
+   void system_contract::setinflation( int64_t annual_rate, int64_t inflation_pay_factor, int64_t votepay_factor ) {
+      // TELOS DISABLED
+      check( false, "not available on telos" );
 
+      require_auth(get_self());
+      check(annual_rate >= 0, "annual_rate can't be negative");
+      if ( inflation_pay_factor < pay_factor_precision ) {
+         check( false, "inflation_pay_factor must not be less than " + std::to_string(pay_factor_precision) );
+      }
+      if ( votepay_factor < pay_factor_precision ) {
+         check( false, "votepay_factor must not be less than " + std::to_string(pay_factor_precision) );
+      }
+      _gstate4.continuous_rate      = get_continuous_rate(annual_rate);
+      _gstate4.inflation_pay_factor = inflation_pay_factor;
+      _gstate4.votepay_factor       = votepay_factor;
+      _global4.set( _gstate4, get_self() );
+   }
 
    /**
     *  Called after a new account is created. This code enforces resource-limits rules
@@ -328,7 +501,8 @@ namespace eosiosystem {
       set_resource_limits( newact, 0, 0, 0 );
    }
 
-   void native::setabi( const name& acnt, const std::vector<char>& abi ) {
+   void native::setabi( const name& acnt, const std::vector<char>& abi,
+                        const binary_extension<std::string>& memo ) {
       eosio::multi_index< "abihash"_n, abi_hash >  table(get_self(), get_self().value);
       auto itr = table.find( acnt.value );
       if( itr == table.end() ) {
@@ -367,28 +541,30 @@ namespace eosiosystem {
       open_act.send( rex_account, core, get_self() );
    }
 
+   // BEGIN TELOS ADDITIONS
    void system_contract::votebpout(name bp, uint32_t penalty_hours) {
-     require_auth(_self);
-     check(penalty_hours != 0, "The penalty should be greater than zero.");
+      require_auth(get_self());
+      check(penalty_hours != 0, "The penalty should be greater than zero.");
 
-     auto pitr = _producers.find(bp.value);
-     check(pitr != _producers.end(), "Producer account was not found");
+      auto pitr = _producers.find(bp.value);
+      check(pitr != _producers.end(), "Producer account was not found");
 
-     _producers.modify(pitr, same_payer, [&](auto &p) {
-       p.kick(kick_type::BPS_VOTING, penalty_hours);
-     });
+      _producers.modify(pitr, same_payer, [&](auto &p) {
+        p.kick(kick_type::BPS_VOTING, penalty_hours);
+      });
    }
 
    void system_contract::setpayrates(uint64_t bpay, uint64_t worker) {
-      require_auth(_self);
-      check(worker <= max_worker_monthly_amount, "WPS rate exceeds the max");
-      check(bpay <= max_bpay_rate, "BPAY rate exceeds the max");
-      _gpayrate.bpay_rate = bpay;
-      _gpayrate.worker_amount = worker;
+       require_auth(get_self());
+       check(worker <= max_worker_monthly_amount, "WPS rate exceeds the max");
+       check(bpay <= max_bpay_rate, "BPAY rate exceeds the max");
+       _gpayrate.bpay_rate = bpay;
+       _gpayrate.worker_amount = worker;
    }
 
    void system_contract::distviarex(name from, asset amount) {
       system_contract::channel_to_rex(from, amount);
    }
+   // END TELOS ADDITIONS
 
 } /// eosio.system

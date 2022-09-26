@@ -19,8 +19,8 @@ find_package(eosio.cdt)
 
 message(STATUS "Building eosio.contracts v${VERSION_FULL}")
 
-set(EOSIO_CDT_VERSION_MIN "1.6")
-set(EOSIO_CDT_VERSION_SOFT_MAX "1.6")
+set(EOSIO_CDT_VERSION_MIN "1.7")
+set(EOSIO_CDT_VERSION_SOFT_MAX "1.7")
 #set(EOSIO_CDT_VERSION_HARD_MAX "")
 
 ### Check the version of eosio.cdt
@@ -63,6 +63,9 @@ target_compile_options(eosio.tedp.wasm PUBLIC -R${CMAKE_CURRENT_SOURCE_DIR}/reso
 target_compile_options(eosio.tedp.wasm PUBLIC -Wunknown-pragmas)
 target_include_directories(eosio.tedp.wasm
    PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/eosio.token/include
+   ${CMAKE_CURRENT_SOURCE_DIR}/libs/eosio.evm/include
+   ${CMAKE_CURRENT_SOURCE_DIR}/libs/eosio.evm/external
    ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set_target_properties(eosio.tedp.wasm

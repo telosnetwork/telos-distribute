@@ -38,7 +38,7 @@ namespace eosiosystem {
     }
   }
 
-  bool system_contract::is_new_schedule_activated(capi_name active_schedule[], uint32_t size) {
+  bool system_contract::is_new_schedule_activated(name active_schedule[], uint32_t size) {
     std::vector<name> new_schedule;
     for (auto &p : _gschedule_metrics.producers_metric) new_schedule.emplace_back(p.bp_name);
 
@@ -46,7 +46,7 @@ namespace eosiosystem {
     std::sort(active_schedule, active_schedule + size);
 
     for (size_t i = 0; i < size; i++){
-      if (active_schedule[i] != new_schedule[i].value) return false;
+      if (active_schedule[i] != new_schedule[i]) return false;
     }
 
     return true;
