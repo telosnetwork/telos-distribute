@@ -162,7 +162,7 @@ double tedp::getbalanceratio()
         evm_balance = account_state->value;
     }
     auto accounts_by_address = accounts.get_index<"byaddress"_n>();
-    auto account = accounts_by_address.find(eosio::checksum256(eosio_evm::toBin(conf.stlos_contract)));
+    auto account = accounts_by_address.find(eosio::checksum256(eosio_evm::toBin(conf.stlos_contract.erase(0,2))));
     if(account != accounts_by_address.end()){
         evm_balance = evm_balance + account->balance;
     }
