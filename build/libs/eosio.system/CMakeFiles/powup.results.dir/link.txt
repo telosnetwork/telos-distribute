@@ -1,1 +1,0 @@
-/usr/bin/eosio-ld CMakeFiles/powup.results.dir/src/powerup.results.cpp.obj -o .powerup/powup.results.wasm 

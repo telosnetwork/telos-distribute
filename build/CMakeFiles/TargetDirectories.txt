@@ -1,5 +1,0 @@
-/root/target/build/CMakeFiles/contracts_project.dir
-/root/target/build/CMakeFiles/eosio.tedp.wasm.dir
-/root/target/build/CMakeFiles/contracts_unit_tests.dir
-/root/target/build/CMakeFiles/edit_cache.dir
-/root/target/build/CMakeFiles/rebuild_cache.dir
