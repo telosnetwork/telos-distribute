@@ -173,5 +173,5 @@ double tedp::getbalanceratio()
 
     const auto evm_total = uint64_t(evm_balance / pow(10, 14));
     const auto rex_total = (rex_pool.begin() != rex_pool.end()) ? rex_pool.begin()->total_lendable.amount : 0;
-    return (rex_total == 0) ? -1.0 : (evm_total * fixed_ratio) / double(rex_total);
+    return (rex_total == 0) ? -1.0 : (evm_total * fixed_ratio) / double(rex_total + evm_total);
 }
