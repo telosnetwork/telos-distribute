@@ -28,8 +28,8 @@ BOOST_FIXTURE_TEST_CASE( set_payouts, eosio_tedp_tester ) try {
     validate_payout([&](uint64_t amount) -> transaction_trace_ptr { return setrex(amount); },
         REX_ACCOUNT, max_rex_amount, rex_interval);
 
-    validate_payout([&](uint64_t amount) -> transaction_trace_ptr { return setecondev(amount); },
-        ECONDEV_ACCOUNT, max_econdev_amount, daily_interval);
+    // validate_payout([&](uint64_t amount) -> transaction_trace_ptr { return setecondev(amount); },
+    //    ECONDEV_ACCOUNT, max_econdev_amount, daily_interval);
 
     validate_payout([&](uint64_t amount) -> transaction_trace_ptr { return setcoredev(amount); },
         COREDEV_ACCOUNT, max_coredev_amount, daily_interval);
@@ -47,8 +47,8 @@ BOOST_FIXTURE_TEST_CASE( set_payouts, eosio_tedp_tester ) try {
     validate_payout([&](uint64_t amount) -> transaction_trace_ptr { return setrex(amount); },
         REX_ACCOUNT, max_rex_amount - 10, rex_interval);
 
-    validate_payout([&](uint64_t amount) -> transaction_trace_ptr { return setecondev(amount); },
-        ECONDEV_ACCOUNT, max_econdev_amount - 10, daily_interval);
+    // validate_payout([&](uint64_t amount) -> transaction_trace_ptr { return setecondev(amount); },
+    //    ECONDEV_ACCOUNT, max_econdev_amount - 10, daily_interval);
 
     validate_payout([&](uint64_t amount) -> transaction_trace_ptr { return setcoredev(amount); },
         COREDEV_ACCOUNT, max_coredev_amount - 10, daily_interval);
@@ -72,11 +72,11 @@ BOOST_FIXTURE_TEST_CASE( set_payouts, eosio_tedp_tester ) try {
         eosio_assert_message_is(
             "Max amount for " + REX_ACCOUNT.to_string() + " account is " + std::to_string(max_rex_amount) + " per 30min"));
 
-    BOOST_REQUIRE_EXCEPTION(
-        setecondev(max_econdev_amount + 1),
-		eosio_assert_message_exception,
-        eosio_assert_message_is(
-            "Max amount for " + ECONDEV_ACCOUNT.to_string() + " account is " + std::to_string(max_econdev_amount) + " per day"));
+    // BOOST_REQUIRE_EXCEPTION(
+    //     setecondev(max_econdev_amount + 1),
+	// 	eosio_assert_message_exception,
+    //     eosio_assert_message_is(
+    //         "Max amount for " + ECONDEV_ACCOUNT.to_string() + " account is " + std::to_string(max_econdev_amount) + " per day"));
 
     BOOST_REQUIRE_EXCEPTION(
         setcoredev(max_coredev_amount + 1),
@@ -135,8 +135,8 @@ BOOST_FIXTURE_TEST_CASE( pay_flow, eosio_tedp_tester ) try {
     validate_payout([&](uint64_t amount) -> transaction_trace_ptr { return settf(amount); }, 
         name("tf"), max_tf_amount, daily_interval);
 
-    validate_payout([&](uint64_t amount) -> transaction_trace_ptr { return setecondev(amount); }, 
-        name("econdevfunds"), max_econdev_amount, daily_interval);
+    // validate_payout([&](uint64_t amount) -> transaction_trace_ptr { return setecondev(amount); }, 
+    //     name("econdevfunds"), max_econdev_amount, daily_interval);
 
     validate_payout([&](uint64_t amount) -> transaction_trace_ptr { return setrex(amount); }, 
         name("eosio.rex"), max_rex_amount, rex_interval);
@@ -168,7 +168,7 @@ BOOST_FIXTURE_TEST_CASE( pay_flow, eosio_tedp_tester ) try {
     auto trace = dump_trace(payout());
     BOOST_REQUIRE_EQUAL(transaction_receipt::executed, trace->receipt->status);
 
-    vector<name> payout_names { name("eosio.rex"), name("tf"), name("econdevfunds") };
+    vector<name> payout_names { name("eosio.rex"), name("tf") };
 
     for(const auto &payout : payout_names) {
         fc::variant payout_info = get_payout(payout);

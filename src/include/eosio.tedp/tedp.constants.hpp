@@ -13,20 +13,21 @@ const uint64_t daily_interval = 86400;
 // 60sec * 30min
 const uint64_t rex_interval = 1800;
 
-// 500k * 12 months / 365 days = 16438.3561
-const uint64_t max_econdev_amount = 16438;
+const uint64_t max_econdev_amount = 0;
 
 // 1mil * 12 months / 365 days = 32876.7123
 const uint64_t max_tf_amount = 32876;
 
-// 300k * 12 months / 365 days = 9863.0136
-const uint64_t max_coredev_amount = 9863;
+// 400k * 12 months / 365 days = 13150
+const uint64_t max_coredev_amount = 13150;
 
 // 1.7mil * 12 months / 365 days / 24hrs / 2 (every half hour) = 1164.3835
 const uint64_t max_rex_amount = 1165;
 
+// 500k/mo for ignite a month
 const uint64_t max_ignitegrants_amount = 16438;
 
+// 1.7mil for fuel month
 const uint64_t max_tlosfuel_amount = 55890;
 
 

@@ -35,7 +35,6 @@ public:
     const name test_account = name("exrsrv.tf");
     const vector<name> payees = {
         TF_ACCOUNT,
-        ECONDEV_ACCOUNT,
         COREDEV_ACCOUNT,
         REX_ACCOUNT,
         IGNITE_ACCOUNT,
