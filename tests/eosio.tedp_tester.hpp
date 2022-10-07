@@ -25,15 +25,36 @@ using mvo = fc::mutable_variant_object;
 #endif
 #endif
 
+#include <eosio.tedp/tedp.constants.hpp>
+
+
 class eosio_tedp_tester : public eosio_system::eosio_system_tester { 
 public:
     abi_serializer tedp_abi_ser;
 
     const name test_account = name("exrsrv.tf");
+    const vector<name> payees = {
+        TF_ACCOUNT,
+        ECONDEV_ACCOUNT,
+        COREDEV_ACCOUNT,
+        REX_ACCOUNT,
+        IGNITE_ACCOUNT,
+        FUEL_ACCOUNT
+    };
 
     eosio_tedp_tester() {
         produce_blocks( 2 );
-        create_accounts_with_resources({ "tf"_n, "econdevfunds"_n, "eosio.evm"_n });
+
+        // only need to create payees not previously created by the system
+        // tester super-class
+        create_accounts_with_resources({
+            TF_ACCOUNT,
+            ECONDEV_ACCOUNT,
+            COREDEV_ACCOUNT,
+            IGNITE_ACCOUNT,
+            FUEL_ACCOUNT
+        });
+
         set_code( test_account, contracts::eosio_tedp_wasm() );
         set_abi( test_account, contracts::eosio_tecp_abi().data() );
         {
@@ -56,20 +77,40 @@ public:
         base_tester::push_action(contract, "create"_n, contract, act );
     }
 
-    void configureevm(const string stlos_contract, const string storage_key, const uint64_t wtlos_index) {
-        action act = get_action(test_account, "setevmconfig"_n, vector<permission_level>{{"eosio"_n, config::active_name}},
+    transaction_trace_ptr configureevm(const string stlos_contract, const string storage_key, const uint64_t wtlos_index) {
+        signed_transaction trx;
+
+        action act = get_action(
+            test_account,
+            "setevmconfig"_n,
+            vector<permission_level>{{"eosio"_n, config::active_name}},
 			mvo()
-        ("user", "eosio"_n)
-        ("stlos_contract", stlos_contract)
-        ("storage_key", storage_key)
-        ("wtlos_index", wtlos_index));
+                ("user", "eosio"_n)
+                ("stlos_contract", stlos_contract)
+                ("storage_key", storage_key)
+                ("wtlos_index", wtlos_index));
+
+        trx.actions.emplace_back(act);
+        set_transaction_headers(trx);
+        trx.sign( get_private_key("eosio"_n, "active"), control->get_chain_id() );
+        return push_transaction(trx);
     }
 
-    void configure(double value) {
-        action act = get_action(test_account, "setratio"_n, vector<permission_level>{{"eosio"_n, config::active_name}},
+    transaction_trace_ptr configure(double value) {
+        signed_transaction trx;
+
+        action act = get_action(
+            test_account,
+            "setratio"_n,
+            vector<permission_level>{{"eosio"_n, config::active_name}},
 			mvo()
-        ("user", "eosio"_n)
-        ("ratio", value));
+                ("user", "eosio"_n)
+                ("ratio_value", value));
+
+        trx.actions.emplace_back(act);
+        set_transaction_headers(trx);
+        trx.sign( get_private_key("eosio"_n, "active"), control->get_chain_id() );
+        return push_transaction(trx);
     }
 
     void create_core_token( symbol core_symbol = symbol{CORE_SYM} ) {
@@ -108,9 +149,9 @@ public:
         return push_transaction(trx);
     }
 
-    transaction_trace_ptr setevmstake(const uint64_t amount) {
+    transaction_trace_ptr setcoredev(const uint64_t amount) {
         signed_transaction trx;
-        action act = get_action(test_account, "setevmstake"_n, vector<permission_level>{{"eosio"_n, config::active_name}},
+        action act = get_action(test_account, "setcoredev"_n, vector<permission_level>{{"eosio"_n, config::active_name}},
 			mvo()
 			    ("amount", amount));
         trx.actions.emplace_back(act);
@@ -130,9 +171,20 @@ public:
         return push_transaction(trx);
     }
 
-    transaction_trace_ptr setdrawdown(const uint64_t amount) {
+    transaction_trace_ptr setignite(const uint64_t amount) {
         signed_transaction trx;
-        action act = get_action(test_account, "setdrawdown"_n, vector<permission_level>{{"eosio"_n, config::active_name}},
+        action act = get_action(test_account, "setignite"_n, vector<permission_level>{{"eosio"_n, config::active_name}},
+			mvo()
+			    ("amount", amount));
+        trx.actions.emplace_back(act);
+        set_transaction_headers(trx);
+        trx.sign( get_private_key("eosio"_n, "active"), control->get_chain_id());
+        return push_transaction(trx);
+    }
+
+    transaction_trace_ptr setfuel(const uint64_t amount) {
+        signed_transaction trx;
+        action act = get_action(test_account, "setfuel"_n, vector<permission_level>{{"eosio"_n, config::active_name}},
 			mvo()
 			    ("amount", amount));
         trx.actions.emplace_back(act);

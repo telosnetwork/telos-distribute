@@ -58,7 +58,8 @@ public:
          "exrsrv.tf"_n,
          "telos.decide"_n,
          "works.decide"_n,
-         "amend.decide"_n
+         "amend.decide"_n,
+         "eosio.evm"_n
          // END TELOS SPECIFIC
       });
 

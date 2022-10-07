@@ -1,10 +1,24 @@
 cmake_minimum_required( VERSION 3.5 )
 
 set(EOSIO_VERSION_MIN "1.8")
-set(EOSIO_VERSION_SOFT_MAX "3.0.0-rc1")
+set(EOSIO_VERSION_SOFT_MAX "3.1.0")
 #set(EOSIO_VERSION_HARD_MAX "")
 
+
+include(ExternalProject)
 find_package(eosio)
+
+ExternalProject_Add(
+  test_contracts
+  SOURCE_DIR ${CMAKE_SOURCE_DIR}/../libs
+  BINARY_DIR ${CMAKE_BINARY_DIR}/../libs
+  CMAKE_ARGS -DCMAKE_BUILD_TYPE=Release
+             -DCMAKE_TOOLCHAIN_FILE=${CDT_ROOT}/lib/cmake/cdt/CDTWasmToolchain.cmake
+  UPDATE_COMMAND ""
+  PATCH_COMMAND ""
+  TEST_COMMAND ""
+  INSTALL_COMMAND ""
+  BUILD_ALWAYS 1)
 
 ### Check the version of eosio
 set(VERSION_MATCH_ERROR_MSG "")
@@ -30,6 +44,12 @@ enable_testing()
 # build unit test executable
 file(GLOB UNIT_TESTS "*.cpp" "*.hpp") # find all unit test suites
 add_eosio_test_executable(unit_test ${UNIT_TESTS}) # build unit tests as one executable
+
+target_include_directories(
+    unit_test
+    PUBLIC
+    ${CMAKE_SOURCE_DIR}/../src/include)  # for tedp.constants.hpp
+
 # mark test suites for execution
 foreach(TEST_SUITE ${UNIT_TESTS}) # create an independent target for each test suite
   execute_process(COMMAND bash -c "grep -E 'BOOST_AUTO_TEST_SUITE\\s*[(]' ${TEST_SUITE} | grep -vE '//.*BOOST_AUTO_TEST_SUITE\\s*[(]' | cut -d ')' -f 1 | cut -d '(' -f 2" OUTPUT_VARIABLE SUITE_NAME OUTPUT_STRIP_TRAILING_WHITESPACE) # get the test suite name from the *.cpp file
