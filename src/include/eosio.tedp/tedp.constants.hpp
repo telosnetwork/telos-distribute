@@ -15,8 +15,8 @@ const uint64_t rex_interval = 1800;
 
 const uint64_t max_econdev_amount = 0;
 
-// 1mil * 12 months / 365 days = 32876.7123
-const uint64_t max_tf_amount = 32876;
+// 700k * 12 months / 365 days = 23013.69863
+const uint64_t max_tf_amount = 23014;
 
 // 400k * 12 months / 365 days = 13150
 const uint64_t max_coredev_amount = 13150;
