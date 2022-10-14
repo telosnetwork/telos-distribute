@@ -7,6 +7,9 @@
 
 #include <eosio.token/eosio.token.hpp>
 
+#include <eosio.tedp/tedp.constants.hpp>
+
+
 using namespace std;
 using namespace eosio;
 
@@ -35,6 +38,12 @@ public:
     void setrex(uint64_t amount);
 
     [[eosio::action]]
+    void setignite(uint64_t amount);
+
+    [[eosio::action]]
+    void setfuel(uint64_t amount);
+
+    [[eosio::action]]
     void delpayout(name to);
 
     [[eosio::action]]
@@ -45,6 +54,8 @@ private:
     static constexpr symbol CORE_SYM = symbol("TLOS", 4);
     static constexpr name EVM_CONTRACT = name("eosio.evm");
     static constexpr name REX_CONTRACT = name("eosio.rex");
+    static constexpr name IGNITE_CONTRACT = name("ignitegrants");
+    static constexpr name FUEL_CONTRACT = name("telosfuelfund");
     static constexpr name SYSTEM_ACCOUNT = name("eosio");
     void setpayout(name to, uint64_t amount, uint64_t interval);
     double getbalanceratio();
