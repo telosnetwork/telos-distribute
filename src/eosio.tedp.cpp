@@ -100,11 +100,15 @@ void tedp::pay()
         if (payouts_due == 0)
             continue;
 
-        payouts_made = true;
         payouts.modify(itr, get_self(), [&](auto &p) {
             p.last_payout = now_ms;
         });
+
+        if (p.amount == 0)
+            continue;
+
         uint64_t total_due = (payouts_due * p.amount) * 10000;
+        payouts_made = true;
 
         if (p.to == REX_ACCOUNT)
         {
