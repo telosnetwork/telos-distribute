@@ -116,7 +116,7 @@ void tedp::pay()
             asset payout;
 
             if(evm_balance_ratio >= 0){
-                payout_amount = round((total_due / (1 + evm_balance_ratio)));
+                payout_amount = round((total_due * (1 - evm_balance_ratio)));
                 payout = asset(payout_amount, CORE_SYM);
                 action(
                     permission_level{_self, "active"_n},
