@@ -1,4 +1,5 @@
 #include <eosio.tedp/eosio.tedp.hpp>
+#include <delphioracle/delphioracle.hpp>
 
 #define ERR_MSG(acc, amount, interval) \
     "Max amount for " + acc.to_string() + " account is " + to_string(amount) + " per " + interval
@@ -85,6 +86,19 @@ void tedp::delpayout(name to)
 
 void tedp::pay()
 {
+    // Reads the delphi oracle TLOS/USD price
+    delphioracle::medianstable medians_table(DELPHI_ORACLE_ACCOUNT, "tlosusd"_n.value);
+    auto medians_timestamp_index = medians_table.get_index<"timestamp"_n>();
+
+    // Gets daily median TLOS price
+    uint64_t tlos_price = 0;
+    for (auto itr = medians_timestamp_index.rbegin(); itr != medians_timestamp_index.rend(); ++itr) {
+        if (itr->type == delphioracle::medians::get_type(median_types::day)) {
+            tlos_price = itr->value / itr->request_count;
+            break;
+        }
+    }
+
     uint64_t now_ms = current_time_point().sec_since_epoch();
     bool payouts_made = false;
     double evm_balance_ratio = getbalanceratio();
@@ -112,6 +126,13 @@ void tedp::pay()
 
         if (p.to == REX_ACCOUNT)
         {
+            if(tlos_price >= 10000 && tlos_price < 20000) { // If TLOS daily close of $1.00, the payout will be decreased to 2/3
+               total_due *= 2;
+               total_due /= 3;
+            } else if(tlos_price > 20000) { // If TLOS daily close of $2.00, the payout will be decreased to 1/3
+               total_due /= 3;
+            }
+
             uint64_t payout_amount = 0;
             asset payout;
 

@@ -49,3 +49,4 @@ static constexpr VNAME EVM_ACCOUNT = "eosio.evm"_n;
 static constexpr VNAME REX_ACCOUNT = "eosio.rex"_n;
 static constexpr VNAME IGNITE_ACCOUNT = "ignitegrants"_n;
 static constexpr VNAME FUEL_ACCOUNT = "tlosfuelfund"_n;
+static constexpr VNAME DELPHI_ORACLE_ACCOUNT = "delphioracle"_n;
