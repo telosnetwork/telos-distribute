@@ -84,20 +84,38 @@ void tedp::delpayout(name to)
     payouts.erase(itr);
 }
 
-void tedp::pay()
-{
+uint64_t tedp::get_telos_average_price() {
     // Reads the delphi oracle TLOS/USD price
-    delphioracle::medianstable medians_table(DELPHI_ORACLE_ACCOUNT, "tlosusd"_n.value);
-    auto medians_timestamp_index = medians_table.get_index<"timestamp"_n>();
+    delphioracle::averagestable averages_table(DELPHI_ORACLE_ACCOUNT, "tlosusd"_n.value);
 
-    // Gets daily median TLOS price
-    uint64_t tlos_price = 0;
-    for (auto itr = medians_timestamp_index.rbegin(); itr != medians_timestamp_index.rend(); ++itr) {
-        if (itr->type == delphioracle::medians::get_type(median_types::day)) {
-            tlos_price = itr->value / itr->request_count;
-            break;
+    // Gets monthly average TLOS price
+    for (auto itr = averages_table.begin(); itr != averages_table.end(); ++itr) {
+        if (itr->type == delphioracle::averages::get_type(average_types::last_30_days)) {
+        return itr->value;
         }
     }
+
+    // Gets 14 days average if monthly average is not available
+    for (auto itr = averages_table.begin(); itr != averages_table.end(); ++itr) {
+        if (itr->type == delphioracle::averages::get_type(average_types::last_14_days)) {
+        return itr->value;
+        }
+    }
+
+    // Gets 7 days average if 14 days average is not available
+    for (auto itr = averages_table.begin(); itr != averages_table.end(); ++itr) {
+        if (itr->type == delphioracle::averages::get_type(average_types::last_7_days)) {
+        return itr->value;
+        }
+    }
+    
+    // Returns smallest non zero value if no price is available
+    return 1;
+}
+
+void tedp::pay()
+{
+    uint64_t tlos_price = get_telos_average_price();
 
     uint64_t now_ms = current_time_point().sec_since_epoch();
     bool payouts_made = false;
