@@ -60,6 +60,8 @@ private:
     void setpayout(name to, uint64_t amount, uint64_t interval);
     double getbalanceratio();
 
+    uint64_t get_telos_average_price();
+
     TABLE config {
         uint64_t ratio;
         uint64_t wtlos_index;

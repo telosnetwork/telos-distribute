@@ -1,4 +1,5 @@
 #include <eosio.tedp/eosio.tedp.hpp>
+#include <delphioracle/delphioracle.hpp>
 
 #define ERR_MSG(acc, amount, interval) \
     "Max amount for " + acc.to_string() + " account is " + to_string(amount) + " per " + interval
@@ -83,8 +84,39 @@ void tedp::delpayout(name to)
     payouts.erase(itr);
 }
 
+uint64_t tedp::get_telos_average_price() {
+    // Reads the delphi oracle TLOS/USD price
+    delphioracle::averagestable averages_table(DELPHI_ORACLE_ACCOUNT, "tlosusd"_n.value);
+
+    // Gets monthly average TLOS price
+    for (auto itr = averages_table.begin(); itr != averages_table.end(); ++itr) {
+        if (itr->type == delphioracle::averages::get_type(average_types::last_30_days)) {
+        return itr->value;
+        }
+    }
+
+    // Gets 14 days average if monthly average is not available
+    for (auto itr = averages_table.begin(); itr != averages_table.end(); ++itr) {
+        if (itr->type == delphioracle::averages::get_type(average_types::last_14_days)) {
+        return itr->value;
+        }
+    }
+
+    // Gets 7 days average if 14 days average is not available
+    for (auto itr = averages_table.begin(); itr != averages_table.end(); ++itr) {
+        if (itr->type == delphioracle::averages::get_type(average_types::last_7_days)) {
+        return itr->value;
+        }
+    }
+    
+    // Returns smallest non zero value if no price is available
+    return 1;
+}
+
 void tedp::pay()
 {
+    uint64_t tlos_price = get_telos_average_price();
+
     uint64_t now_ms = current_time_point().sec_since_epoch();
     bool payouts_made = false;
     double evm_balance_ratio = getbalanceratio();
@@ -112,6 +144,13 @@ void tedp::pay()
 
         if (p.to == REX_ACCOUNT)
         {
+            if(tlos_price >= 10000 && tlos_price < 20000) { // If TLOS daily close of $1.00, the payout will be decreased to 2/3
+               total_due *= 2;
+               total_due /= 3;
+            } else if(tlos_price > 20000) { // If TLOS daily close of $2.00, the payout will be decreased to 1/3
+               total_due /= 3;
+            }
+
             uint64_t payout_amount = 0;
             asset payout;
 

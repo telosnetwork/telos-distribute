@@ -29,6 +29,7 @@ add_contract(
 target_include_directories(eosio.tedp
    PUBLIC
    ${CMAKE_CURRENT_SOURCE_DIR}/../libs/eosio.token/include
+   ${CMAKE_CURRENT_SOURCE_DIR}/../libs/delphioracle/include
    ${CMAKE_CURRENT_SOURCE_DIR}/../libs/eosio.evm/include
    ${CMAKE_CURRENT_SOURCE_DIR}/../libs/eosio.evm/external
    ${CMAKE_CURRENT_SOURCE_DIR}/include)
